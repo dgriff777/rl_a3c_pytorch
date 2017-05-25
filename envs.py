@@ -26,7 +26,7 @@ def atari_env(env_id, env_conf):
     return env
 
 
-def _process_frame42(frame, conf):
+def _process_frame(frame, conf):
     frame = frame[conf["crop1"]:conf["crop2"] + 160, :160]
     frame = cv2.resize(rgb2gray(frame), (80, conf["dimension2"]))
     frame = cv2.resize(frame, (80, 80))
@@ -42,7 +42,7 @@ class AtariRescale(vectorized.ObservationWrapper):
         self.conf = env_conf
 
     def _observation(self, observation_n):
-        return [_process_frame42(observation, self.conf) for observation in observation_n]
+        return [_process_frame(observation, self.conf) for observation in observation_n]
 
 
 class NormalizedEnv(vectorized.ObservationWrapper):
