@@ -1,8 +1,8 @@
 # RL A3C Pytorch
 
-![A3C LSTM playing Breakout-v0](https://raw.githubusercontent.com/dgriff777/rl_a3c_pytorch/master/Breakout.gif)
-![A3C LSTM playing MsPacman-v0](https://raw.githubusercontent.com/dgriff777/rl_a3c_pytorch/master/MsPacman.gif)
-![A3C LSTM playing Pong-v0](https://raw.githubusercontent.com/dgriff777/rl_a3c_pytorch/master/Pong.gif)
+![A3C LSTM playing Breakout-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Breakout.gif)
+![A3C LSTM playing MsPacman-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/MsPacman.gif)
+![A3C LSTM playing Pong-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Pong.gif)
 
 This is a repository includes my implementation with reinforcement learning using Asynchronous Advantage Actor-Critic (A3C) 
 
