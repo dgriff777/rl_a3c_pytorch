@@ -2,7 +2,7 @@
 
 ![A3C LSTM playing Breakout-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Breakout.gif)
 
-This is a repository includes my implementation with reinforcement learning using Asynchronous Advantage Actor-Critic (A3C) 
+This is a repository includes my implementation with reinforcement learning using Asynchronous Advantage Actor-Critic (A3C) in Pytorch
 
 ### A3C LSTM
 
