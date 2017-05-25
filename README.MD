@@ -2,11 +2,11 @@
 
 ![A3C LSTM playing Breakout-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Breakout.gif)
 
-This is a repository includes my implementation with reinforcement learning using Asynchronous Advantage Actor-Critic (A3C) in Pytorch
+This repository includes my implementation with reinforcement learning using Asynchronous Advantage Actor-Critic (A3C) in Pytorch
 
 ### A3C LSTM
 
-I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. I have only trained model on environemnts Pong-v0, MsPacman-v0, and Breakout-v0 but had very good performance and currently hold top scores on openai gym leaderboard for those games. Saved models in trained_models folder. Plan to train agent for SpaceInvaders-v0 and Asteroids-v0 in future.
+I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. I have only trained model on environments for Pong-v0, MsPacman-v0, and Breakout-v0 but had very good performance and currently hold top scores on openai gym leaderboard for those games. Saved models in trained_models folder. Plan to train agent for SpaceInvaders-v0 and Asteroids-v0 in future.
 
 link to the my Gym environment evaluations below
 
@@ -24,7 +24,7 @@ link to the my Gym environment evaluations below
 - Pytorch
 
 ## Training
-To train agent on Pong-v0 environment with 32 different worker threads:
+To train agent in Pong-v0 environment with 32 different worker threads:
 
 ```
 OMP_NUM_THREADS=1 python main.py --env-name Pong-v0 --num-processes 32
