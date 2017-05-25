@@ -1,9 +1,7 @@
 from __future__ import print_function, division
-
 import argparse
 import os
 import sys
-
 import torch
 import torch.optim as optim
 from torch.multiprocessing import Process, Lock
@@ -56,7 +54,8 @@ parser.add_argument('--log-dir', default='logs/', metavar='LG',
 # Based on
 # https://github.com/pytorch/examples/tree/master/mnist_hogwild
 # Training settings
-# Implemented multiprocessing using locks but was not beneficial. Hogwild training was far superior
+# Implemented multiprocessing using locks but was not beneficial. Hogwild
+# training was far superior
 
 if __name__ == '__main__':
     args = parser.parse_args()
