@@ -12,7 +12,7 @@ I implemented an A3C LSTM model and trained it in the atari 2600 environments pr
 
 link to the my Gym environment evaluations below
 
-- https://gym.openai.com/envs/Breakout-v0
+- ![A3C LSTM playing Breakout-v0](https://gym.openai.com/evaluations/eval_CyVPHgs0S22DiZsWXoPFw)
 - https://gym.openai.com/envs/Pong-v0
 - https://gym.openai.com/envs/MsPacman-v0
 
