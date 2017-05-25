@@ -2,7 +2,6 @@ from __future__ import division
 import math
 import os
 import sys
-
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
@@ -23,7 +22,6 @@ def train(rank, args, shared_model, optimizer, env_conf):
     torch.manual_seed(args.seed + rank)
 
     env = atari_env(args.env_name, env_conf)
-
     model = A3Clstm(env.observation_space.shape[0], env.action_space)
     observation = env.reset()
     action = env.action_space.sample()
