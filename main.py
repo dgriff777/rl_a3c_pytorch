@@ -6,7 +6,7 @@ import sys
 
 import torch
 import torch.optim as optim
-import torch.multiprocessing as mp
+from torch.multiprocessing import Process, Locks
 import torch.nn as nn
 import torch.nn.functional as F
 from envs import atari_env, read_config
@@ -26,8 +26,8 @@ parser.add_argument('--tau', type=float, default=1.00, metavar='T',
                     help='parameter for GAE (default: 1.00)')
 parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
-parser.add_argument('--num-processes', type=int, default=16, metavar='NP',
-                    help='how many training processes to use (default: 16)')
+parser.add_argument('--num-processes', type=int, default=32, metavar='NP',
+                    help='how many training processes to use (default: 32)')
 parser.add_argument('--num-steps', type=int, default=20, metavar='NS',
                     help='number of forward steps in A3C (default: 20)')
 parser.add_argument('--max-episode-length', type=int, default=10000, metavar='M',
@@ -44,7 +44,7 @@ parser.add_argument('--save-score-level', type=int, default=20, metavar='SSL',
                     help='reward score test evaluation must get higher than to save model')
 parser.add_argument('--optimizer', default='Adam', metavar='OPT',
                     help='shares optimizer choice of Adam or RMSprop')
-parser.add_argument('--count-lives', default=True, metavar='CL',
+parser.add_argument('--count-lives', default=False, metavar='CL',
                     help='end of life is end of training episode.')
 parser.add_argument('--load-model-dir', default='trained_models/', metavar='LMD',
                     help='folder to load trained models from')
@@ -88,13 +88,13 @@ if __name__ == '__main__':
 
     processes = []
 
-    p = mp.Process(target=test, args=(
+    p = Process(target=test, args=(
         args.num_processes, args, shared_model, env_conf))
     p.start()
     processes.append(p)
     time.sleep(0.1)
     for rank in range(0, args.num_processes):
-        p = mp.Process(target=train, args=(
+        p = Process(target=train, args=(
             rank, args, shared_model, optimizer, env_conf))
         p.start()
         processes.append(p)
