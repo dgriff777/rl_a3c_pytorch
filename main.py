@@ -6,7 +6,7 @@ import sys
 
 import torch
 import torch.optim as optim
-from torch.multiprocessing import Process, Locks
+from torch.multiprocessing import Process, Lock
 import torch.nn as nn
 import torch.nn.functional as F
 from envs import atari_env, read_config
