@@ -3,10 +3,8 @@ import math
 import argparse
 import os
 import sys
-
 import torch
 import torch.nn.functional as F
-import torch.optim as optim
 from envs import atari_env, read_config
 from model import A3Clstm, normalized_columns_initializer
 from torch.autograd import Variable
