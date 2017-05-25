@@ -30,6 +30,8 @@ To train agent in Pong-v0 environment with 32 different worker threads:
 OMP_NUM_THREADS=1 python main.py --env-name Pong-v0 --num-processes 32
 ```
 
+Hit Ctrl C to end training session properly
+
 ![A3C LSTM playing Pong-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Pong.gif)
 
 ## Evaluation
