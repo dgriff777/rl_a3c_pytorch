@@ -1,0 +1,32 @@
+{
+  "Default": {
+    "crop1": 34,
+    "crop2": 34,
+    "dimension2": 80
+  },
+  "Pong-v0": {
+    "crop1": 34,
+    "crop2": 34,
+    "dimension2": 80    
+  },
+  "Breakout-v0": {
+    "crop1": 34,
+    "crop2": 34,
+    "dimension2": 80
+  },
+  "MsPacman-v0": {
+    "crop1": 2,
+    "crop2": 10,
+    "dimension2": 84
+  },
+  "SpaceInvaders-v0": {
+    "crop1": 27,
+    "crop2": 35,
+    "dimension2": 84
+  },
+  "Asteroids-v0": {
+    "crop1": 16,
+    "crop2": 34,
+    "dimension2": 94
+  }
+}
