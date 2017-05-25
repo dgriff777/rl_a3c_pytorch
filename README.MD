@@ -8,11 +8,11 @@ This is a repository includes my implementation with reinforcement learning usin
 
 ### A3C LSTM
 
-I implemented an A3C LSTM model and trained it in the atari 2600 environments provide in the Openai Gym. I have only trained model on environemnts Pong-v0, MsPacman-v0, and Breakout-v0 but had very good performance and currently hold top scores on openai gym leaderboard for those games.
+I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. I have only trained model on environemnts Pong-v0, MsPacman-v0, and Breakout-v0 but had very good performance and currently hold top scores on openai gym leaderboard for those games.
 
 link to the my Gym environment evaluations below
 
-- ![A3C LSTM playing Breakout-v0](https://gym.openai.com/evaluations/eval_CyVPHgs0S22DiZsWXoPFw)
+- https://gym.openai.com/envs/Breakout-v0
 - https://gym.openai.com/envs/Pong-v0
 - https://gym.openai.com/envs/MsPacman-v0
 
