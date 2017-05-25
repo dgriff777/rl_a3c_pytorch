@@ -1,8 +1,6 @@
 # RL A3C Pytorch
 
 ![A3C LSTM playing Breakout-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Breakout.gif)
-![A3C LSTM playing MsPacman-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/MsPacman.gif)
-![A3C LSTM playing Pong-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Pong.gif)
 
 This is a repository includes my implementation with reinforcement learning using Asynchronous Advantage Actor-Critic (A3C) 
 
@@ -16,6 +14,8 @@ link to the my Gym environment evaluations below
 - https://gym.openai.com/envs/Pong-v0
 - https://gym.openai.com/envs/MsPacman-v0
 
+![A3C LSTM playing MsPacman-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/MsPacman.gif)
+
 ## Requirements
 
 - Python 2.7+
@@ -28,6 +28,8 @@ To train agent on Pong-v0 environment with 32 different worker threads:
 ```
 OMP_NUM_THREADS=1 python main.py --env-name Pong-v0" --num-processes 32
 ```
+
+![A3C LSTM playing Pong-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Pong.gif)
 
 ## Evaluation
 To run a 100 episode gym evaluation with trained model
