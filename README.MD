@@ -12,11 +12,12 @@ I implemented an A3C LSTM model and trained it in the atari 2600 environments pr
 
 Gym atari settings are more difficult to train than traditional ALE atari settings as Gym uses stochastic frame skipping and has higher number of discrete actions. Such as Breakout-v0 has 6 discrete actions in Gym but ALE is set to only 4 discrete actions.
 
-link to the my Gym environment evaluations below
+link to the Gym environment evaluations below
 
 - https://gym.openai.com/envs/Breakout-v0
 - https://gym.openai.com/envs/Pong-v0
 - https://gym.openai.com/envs/MsPacman-v0
+- https://gym.openai.com/envs/Asteroids-v0
 
 
 ![A3C LSTM playing MsPacman-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/MsPacman.gif)
