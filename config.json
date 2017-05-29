@@ -20,13 +20,18 @@
     "dimension2": 84
   },
   "SpaceInvaders-v0": {
-    "crop1": 27,
-    "crop2": 35,
-    "dimension2": 84
+    "crop1": 8,
+    "crop2": 36,
+    "dimension2": 94
   },
   "Asteroids-v0": {
     "crop1": 16,
     "crop2": 34,
     "dimension2": 94
+  },
+  "VideoPinball-v0": {
+    "crop1": 42,
+    "crop2": 60,
+    "dimension2": 89
   }
 }
