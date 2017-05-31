@@ -27,7 +27,7 @@ def setup_logger(logger_name, log_file, level=logging.INFO):
     l.addHandler(streamHandler)
 
 
-parser = argparse.ArgumentParser(description='A3C')
+parser = argparse.ArgumentParser(description='A3C_EVAL')
 parser.add_argument('--env-name', default='Pong-v0', metavar='ENV',
                     help='environment to train on (default: Pong-v0)')
 parser.add_argument('--env-config', default='config.json', metavar='EC',
@@ -38,6 +38,10 @@ parser.add_argument('--load-model-dir', default='trained_models/', metavar='LMD'
                     help='folder to load trained models from')
 parser.add_argument('--log-dir', default='logs/', metavar='LG',
                     help='folder to save logs')
+parser.add_argument('--render', default=False, metavar='R',
+                    help='Watch game as it being played')
+parser.add_argument('--render-freq', type=int, default=1, metavar='RF',
+                    help='Frequency to watch rendered game play')
 args = parser.parse_args()
 
 setup_json = read_config(args.env_config)
@@ -70,8 +74,9 @@ for i_episode in range(args.num_episodes):
     episode_length = 0
     reward_sum = 0
     while True:
-
-        # Sync with the shared model
+        if args.render:
+            if i_episode%args.render_freq==0:
+                env.render()
         if done:
             model.load_state_dict(saved_state)
             cx = Variable(torch.zeros(1, 512), volatile=True)
