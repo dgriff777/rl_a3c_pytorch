@@ -30,9 +30,9 @@
     "dimension2": 80    
   },
   "SpaceInvaders-v0": {
-    "crop1": 27,
-    "crop2": 35,
-    "dimension2": 84
+    "crop1": 8,
+    "crop2": 36,
+    "dimension2": 94
   },
   "VideoPinball-v0": {
     "crop1": 42,
