@@ -8,9 +8,11 @@ This repository includes my implementation with reinforcement learning using Asy
 
 ### A3C LSTM
 
-I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. I have only trained model on environments for Pong-v0, MsPacman-v0, and Breakout-v0 but had very good performance and currently hold top scores on openai gym leaderboard for those games. Saved models in trained_models folder. Plan to train agent for SpaceInvaders-v0 and Asteroids-v0 in future.
+I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. Included in repo are trained models for Pong-v0, MsPacman-v0, Breakout-v0, BeamRider-v0, and Asteroids-v0 which have had very good performance and currently hold the top scores on openai gym leaderboard for each of those games. Saved models in trained_models folder. Plan to train agent for SpaceInvaders-v0 and a few others in future.
 
-Gym atari settings are more difficult to train than traditional ALE atari settings as Gym uses stochastic frame skipping and has higher number of discrete actions. Such as Breakout-v0 has 6 discrete actions in Gym but ALE is set to only 4 discrete actions.
+Have optimizers using shared statistics for RMSProp and Adam available for use in training.
+
+Gym atari settings are more difficult to train than traditional ALE atari settings as Gym uses stochastic frame skipping and has higher number of discrete actions. Such as Breakout-v0 has 6 discrete actions in Gym but ALE is set to only 4 discrete actions. Also in GYM atari they randomly repeat the previous action with probability 0.25
 
 link to the Gym environment evaluations below
 
