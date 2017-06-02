@@ -45,7 +45,10 @@ parser.add_argument('--render-freq', type=int, default=1, metavar='RF',
 args = parser.parse_args()
 
 setup_json = read_config(args.env_config)
-env_conf = setup_json[args.env_name]
+env_conf = setup_json["Default"]
+for i in setup_json.keys():
+    if i in args.env_name:
+        env_conf = setup_json[i]
 torch.set_default_tensor_type('torch.FloatTensor')
 
 saved_state = torch.load('{0}{1}.dat'.format(args.load_model_dir, args.env_name),

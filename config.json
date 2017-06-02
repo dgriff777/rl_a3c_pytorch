@@ -4,37 +4,42 @@
     "crop2": 34,
     "dimension2": 80
   },
-  "Asteroids-v0": {
+  "Asteroids": {
     "crop1": 16,
     "crop2": 34,
     "dimension2": 94
   },
-  "BeamRider-v0": {
+  "BeamRider": {
     "crop1": 20,
     "crop2": 20,
     "dimension2": 80
   },
-  "Breakout-v0": {
+  "Breakout": {
     "crop1": 34,
     "crop2": 34,
     "dimension2": 80
   },
-  "MsPacman-v0": {
+  "Centipede": {
+    "crop1": 36,
+    "crop2": 56,
+    "dimension2": 90
+  },
+  "MsPacman": {
     "crop1": 2,
     "crop2": 10,
     "dimension2": 84
   },
-  "Pong-v0": {
+  "Pong": {
     "crop1": 34,
     "crop2": 34,
     "dimension2": 80    
   },
-  "SpaceInvaders-v0": {
+  "SpaceInvaders": {
     "crop1": 8,
     "crop2": 36,
     "dimension2": 94
   },
-  "VideoPinball-v0": {
+  "VideoPinball": {
     "crop1": 42,
     "crop2": 60,
     "dimension2": 89
