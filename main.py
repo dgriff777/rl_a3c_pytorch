@@ -63,10 +63,10 @@ if __name__ == '__main__':
     torch.manual_seed(args.seed)
 
     setup_json = read_config(args.env_config)
-    if args.env_name in setup_json.keys():
-        env_conf = setup_json[args.env_name]
-    else:
-        env_conf = setup_json["Default"]
+    env_conf = setup_json["Default"]
+    for i in setup_json.keys():
+        if i in args.env_name:
+            env_conf = setup_json[i]
     env = atari_env(args.env_name, env_conf)
     shared_model = A3Clstm(env.observation_space.shape[0], env.action_space)
     if args.load:
