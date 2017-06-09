@@ -42,6 +42,8 @@ parser.add_argument('--render', default=False, metavar='R',
                     help='Watch game as it being played')
 parser.add_argument('--render-freq', type=int, default=1, metavar='RF',
                     help='Frequency to watch rendered game play')
+parser.add_argument('--max-episode-length', type=int, default=10000, metavar='M',
+                    help='maximum length of an episode (default: 10000)')
 args = parser.parse_args()
 
 setup_json = read_config(args.env_config)
@@ -96,7 +98,7 @@ for i_episode in range(args.num_episodes):
         state, reward, done, _ = env.step(action[0, 0])
         episode_length += 1
         reward_sum += reward
-        done = done or episode_length >= 10000
+        done = done or episode_length >= args.max_episode_length
         if done:
             num_tests += 1
             reward_total_sum += reward_sum
