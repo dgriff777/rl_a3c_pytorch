@@ -1,4 +1,3 @@
-## README still under construction
 
 # RL A3C Pytorch
 
@@ -8,17 +7,18 @@ This repository includes my implementation with reinforcement learning using Asy
 
 ### A3C LSTM
 
-I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. Included in repo are trained models for Pong-v0, MsPacman-v0, Breakout-v0, BeamRider-v0, and Asteroids-v0 which have had very good performance and currently hold the top scores on openai gym leaderboard for each of those games. Saved models in trained_models folder. Plan to train agent for SpaceInvaders-v0 and a few others in future.
+I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. Included in repo are trained models for Pong-v0, MsPacman-v0, Breakout-v0, BeamRider-v0, and Asteroids-v0 which have had very good performance and currently hold the top scores on openai gym leaderboard for each of those games. Saved models in trained_models folder. Added a pre-trained SpaceInvadersDeterministic-v3 model which use can see in gif getting a score of 30,330! and scores often higher and as high as 50,000! Can see link for gym evaluation for it below..
 
-Have optimizers using shared statistics for RMSProp and Adam available for use in training.
+Have optimizers using shared statistics for RMSProp and Adam available for use in training as well option to use non shared optimizer.
 
-Gym atari settings are more difficult to train than traditional ALE atari settings as Gym uses stochastic frame skipping and has higher number of discrete actions. Such as Breakout-v0 has 6 discrete actions in Gym but ALE is set to only 4 discrete actions. Also in GYM atari they randomly repeat the previous action with probability 0.25
+Gym atari settings are more difficult to train than traditional ALE atari settings as Gym uses stochastic frame skipping and has higher number of discrete actions. Such as Breakout-v0 has 6 discrete actions in Gym but ALE is set to only 4 discrete actions. Also in GYM atari they randomly repeat the previous action with probability 0.25 and there is time/step limit that limits performance.
 
 link to the Gym environment evaluations below
 
-- https://gym.openai.com/envs/Breakout-v0
-- https://gym.openai.com/envs/Pong-v0
-- https://gym.openai.com/envs/MsPacman-v0
+[SpaceInvadersDeterministic-v3](https://gym.openai.com/evaluations/eval_ZaX8BbF5Rl6Hi6CViyMuoQ#reproducibility)
+[Breakout-v0](https://gym.openai.com/envs/Breakout-v0)
+[BeamRider-v0](https://gym.openai.com/envs/BeamRider-v0)
+[MsPacman-v0](https://gym.openai.com/envs/MsPacman-v0)
 
 
 
@@ -51,4 +51,4 @@ python gym_eval.py --env-name Pong-v0 --num-episodes 100
 
 - https://github.com/ikostrikov/pytorch-a3c
 
-## README still under construction
+
