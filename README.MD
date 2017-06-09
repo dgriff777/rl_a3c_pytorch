@@ -39,7 +39,7 @@ link to the Gym environment evaluations below
 To train agent in Pong-v0 environment with 32 different worker threads:
 
 ```
-OMP_NUM_THREADS=1 python main.py --env-name Pong-v0 --num-processes 32
+python main.py --env-name Pong-v0 --num-processes 32
 ```
 
 Hit Ctrl C to end training session properly
