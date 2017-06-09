@@ -29,8 +29,8 @@ parser.add_argument('--render', default=False, metavar='R',
                     help='Watch game as it being played')
 parser.add_argument('--render-freq', type=int, default=1, metavar='RF',
                     help='Frequency to watch rendered game play')
-parser.add_argument('--max-episode-length', type=int, default=10000, metavar='M',
-                    help='maximum length of an episode (default: 10000)')
+parser.add_argument('--max-episode-length', type=int, default=100000, metavar='M',
+                    help='maximum length of an episode (default: 100000)')
 args = parser.parse_args()
 
 setup_json = read_config(args.env_config)
