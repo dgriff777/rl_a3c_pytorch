@@ -23,9 +23,9 @@ def train(rank, args, shared_model, optimizer, env_conf):
 
     env = atari_env(args.env_name, env_conf)
     model = A3Clstm(env.observation_space.shape[0], env.action_space)
-    observation = env.reset()
+    _ = env.reset()
     action = env.action_space.sample()
-    observation, reward, done, info = env.step(action)
+    _, _, _, info = env.step(action)
     start_lives = info['ale.lives']
 
     if optimizer is None:
@@ -39,7 +39,6 @@ def train(rank, args, shared_model, optimizer, env_conf):
     state = env.reset()
     state = torch.from_numpy(state).float()
     done = True
-    lives = start_lives
     episode_length = 0
     while True:
         episode_length += 1
@@ -72,13 +71,12 @@ def train(rank, args, shared_model, optimizer, env_conf):
             state, reward, done, info = env.step(action.numpy())
             done = done or episode_length >= args.max_episode_length
             if args.count_lives:
-                if lives > info['ale.lives']:
+                if start_lives > info['ale.lives']:
                     done = True
             reward = max(min(reward, 1), -1)
 
             if done:
                 episode_length = 0
-                lives = start_lives
                 state = env.reset()
 
             state = torch.from_numpy(state).float()

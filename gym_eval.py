@@ -5,26 +5,13 @@ import os
 import sys
 import torch
 import torch.nn.functional as F
-from envs import atari_env, read_config
+from envs import atari_env, read_config, setup_logger
 from model import A3Clstm, normalized_columns_initializer
 from torch.autograd import Variable
 from torchvision import datasets, transforms
 import time
 import gym
 import logging
-
-
-def setup_logger(logger_name, log_file, level=logging.INFO):
-    l = logging.getLogger(logger_name)
-    formatter = logging.Formatter('%(asctime)s : %(message)s')
-    fileHandler = logging.FileHandler(log_file, mode='w')
-    fileHandler.setFormatter(formatter)
-    streamHandler = logging.StreamHandler()
-    streamHandler.setFormatter(formatter)
-
-    l.setLevel(level)
-    l.addHandler(fileHandler)
-    l.addHandler(streamHandler)
 
 
 parser = argparse.ArgumentParser(description='A3C_EVAL')
@@ -66,9 +53,7 @@ log['{}_mon_log'.format(args.env_name)] = logging.getLogger(
 
 
 env = atari_env("{}".format(args.env_name), env_conf)
-
 model = A3Clstm(env.observation_space.shape[0], env.action_space)
-
 model.eval()
 
 env = gym.wrappers.Monitor(env, "{}_monitor".format(args.env_name), force=True)
@@ -80,7 +65,7 @@ for i_episode in range(args.num_episodes):
     reward_sum = 0
     while True:
         if args.render:
-            if i_episode%args.render_freq==0:
+            if i_episode % args.render_freq == 0:
                 env.render()
         if done:
             model.load_state_dict(saved_state)
