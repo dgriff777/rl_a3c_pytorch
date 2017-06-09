@@ -34,6 +34,11 @@
     "crop2": 34,
     "dimension2": 80    
   },
+  "Seaquest": {
+    "crop1": 30,
+    "crop2": 30,
+    "dimension2": 80
+  },
   "SpaceInvaders": {
     "crop1": 8,
     "crop2": 36,
