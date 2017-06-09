@@ -1,6 +1,7 @@
 from __future__ import print_function, division
-import argparse
 import os
+os.environ["OMP_NUM_THREADS"] = "1"
+import argparse
 import sys
 import torch
 import torch.optim as optim
