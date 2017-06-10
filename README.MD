@@ -7,7 +7,7 @@ This repository includes my implementation with reinforcement learning using Asy
 
 ### A3C LSTM
 
-I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. Included in repo are trained models for Pong-v0, MsPacman-v0, Breakout-v0, BeamRider-v0, and Asteroids-v0 which have had very good performance and currently hold the top scores on openai gym leaderboard for each of those games. Saved models in trained_models folder. Added a pre-trained SpaceInvadersDeterministic-v3 model which you can see in gif getting a score of 30,330! and scores often higher and as high as 50,000! Can see link for gym evaluation for it below..
+I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. Included in repo are trained models for Pong-v0, MsPacman-v0, Breakout-v0, BeamRider-v0, and Asteroids-v0 which have had very good performance and currently hold the top scores on openai gym leaderboard for each of those games. Saved models in trained_models folder. Added a pre-trained SpaceInvadersDeterministic-v3 model which you can see in gif getting a score of 58,390! and scores often higher and as high as 70,000!
 
 Have optimizers using shared statistics for RMSProp and Adam available for use in training as well option to use non shared optimizer.
 
