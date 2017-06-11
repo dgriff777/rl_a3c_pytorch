@@ -7,7 +7,7 @@ This repository includes my implementation with reinforcement learning using Asy
 
 ### A3C LSTM
 
-I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. Included in repo are trained models for Pong-v0, MsPacman-v0, Breakout-v0, BeamRider-v0, and Asteroids-v0 which have had very good performance and currently hold the top scores on openai gym leaderboard for each of those games. Saved models in trained_models folder. Added a pre-trained SpaceInvadersDeterministic-v3 model which you can see in gif getting a score of 58,390! and scores often higher and as high as 70,000!
+I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. Included in repo are trained models for SpaceInvaders-v0, MsPacman-v0, Breakout-v0, BeamRider-v0, Pong-v0 and Asteroids-v0 which have had very good performance and currently hold the top scores on openai gym leaderboard for each of those games. Saved models in trained_models folder. Added a pre-trained SpaceInvadersDeterministic-v3 model which you can see in gif getting a score of 58,390! and scores often higher and as high as 70,000!
 
 Have optimizers using shared statistics for RMSProp and Adam available for use in training as well option to use non shared optimizer.
 
@@ -15,7 +15,7 @@ Gym atari settings are more difficult to train than traditional ALE atari settin
 
 link to the Gym environment evaluations below
 
-[SpaceInvadersDeterministic-v3](https://gym.openai.com/evaluations/eval_ZaX8BbF5Rl6Hi6CViyMuoQ#reproducibility)
+[SpaceInvaders-v0](https://gym.openai.com/envs/SpaceInvaders-v0)
 
 [Breakout-v0](https://gym.openai.com/envs/Breakout-v0)
 
@@ -55,5 +55,3 @@ python gym_eval.py --env-name Pong-v0 --num-episodes 100
 ## Project Reference
 
 - https://github.com/ikostrikov/pytorch-a3c
-
-
