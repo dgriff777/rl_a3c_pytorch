@@ -9,7 +9,7 @@ This repository includes my implementation with reinforcement learning using Asy
 
 ### A3C LSTM
 
-I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. So far model currently has shown the best performance I have seen for atari game environments.  Included in repo are trained models for SpaceInvaders-v0, MsPacman-v0, Breakout-v0, BeamRider-v0, Pong-v0 and Asteroids-v0 which have had very good performance and currently hold the top scores on openai gym leaderboard for each of those games. Saved models in trained_models folder.
+I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. So far model currently has shown the best performance I have seen for atari game environments.  Included in repo are trained models for SpaceInvaders-v0, MsPacman-v0, Breakout-v0, BeamRider-v0, Pong-v0 and Asteroids-v0 which have had very good performance and currently hold the top scores on openai gym leaderboard for each of those games. Saved models in trained_models folder. *Trained models may not run properly if you have recently updated gym and atari-py and have v4 atari versions as changes had effects on all other versions of atari games from update as well. To make sure they run properly u need to keep gym <= 0.8.2 and atari-py <= 0.0.21*
 
 Have optimizers using shared statistics for RMSProp and Adam available for use in training as well option to use non shared optimizer.
 
@@ -38,6 +38,8 @@ link to the Gym environment evaluations below
 - Pytorch
 
 ## Training
+*When training model it is important to limit number of worker threads to number of cpu cores available as too many threads (e.g. more than one thread per cpu core available) will actually be detrimental in training speed and effectiveness*
+
 To train agent in Pong-v0 environment with 32 different worker threads:
 
 ```
