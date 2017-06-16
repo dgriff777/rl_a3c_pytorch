@@ -1,18 +1,15 @@
 from __future__ import division
-import math
-import os
-import sys
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
 from envs import atari_env
 from model import A3Clstm
 from torch.autograd import Variable
-from torchvision import datasets, transforms
 
 
 def ensure_shared_grads(model, shared_model):
-    for param, shared_param in zip(model.parameters(), shared_model.parameters()):
+    for param, shared_param in zip(model.parameters(),
+                                   shared_model.parameters()):
         if shared_param.grad is not None:
             return
         shared_param._grad = param.grad
@@ -58,8 +55,8 @@ def train(rank, args, shared_model, optimizer, env_conf):
 
         for step in range(args.num_steps):
 
-            value, logit, (hx, cx) = model(
-                (Variable(state.unsqueeze(0)), (hx, cx)))
+            value, logit, (hx, cx) = model((Variable(state.unsqueeze(0)),
+                                            (hx, cx)))
             prob = F.softmax(logit)
             log_prob = F.log_softmax(logit)
             entropy = -(log_prob * prob).sum(1)

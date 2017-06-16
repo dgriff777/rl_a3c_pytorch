@@ -1,22 +1,17 @@
 from __future__ import division
-import math
-import os
-import sys
 import torch
 import torch.nn.functional as F
-import torch.optim as optim
 from envs import atari_env, setup_logger
 from model import A3Clstm
 from torch.autograd import Variable
-from torchvision import datasets, transforms
 import time
 import logging
 
 
 def test(rank, args, shared_model, env_conf):
     log = {}
-    setup_logger('{}_log'.format(args.env_name),
-                 r'{0}{1}_log'.format(args.log_dir, args.env_name))
+    setup_logger('{}_log'.format(args.env_name), r'{0}{1}_log'.format(
+        args.log_dir, args.env_name))
     log['{}_log'.format(args.env_name)] = logging.getLogger(
         '{}_log'.format(args.env_name))
     d_args = vars(args)
@@ -66,6 +61,7 @@ def test(rank, args, shared_model, env_conf):
                     time.strftime("%Hh %Mm %Ss",
                                   time.gmtime(time.time() - start_time)),
                     reward_sum, episode_length, reward_mean))
+
             if reward_sum > args.save_score_level:
                 model.load_state_dict(shared_model.state_dict())
                 state_to_save = model.state_dict()

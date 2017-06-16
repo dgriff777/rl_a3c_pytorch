@@ -2,7 +2,6 @@ from __future__ import division
 import gym
 import numpy as np
 from gym.spaces.box import Box
-import universe
 from universe import vectorized
 from universe.wrappers import Unvectorize, Vectorize
 from skimage.color import rgb2gray
@@ -22,6 +21,7 @@ def setup_logger(logger_name, log_file, level=logging.INFO):
     l.setLevel(level)
     l.addHandler(fileHandler)
     l.addHandler(streamHandler)
+
 
 def read_config(file_path):
     """Read JSON config."""
@@ -48,18 +48,19 @@ def _process_frame(frame, conf):
 
 
 class AtariRescale(vectorized.ObservationWrapper):
-
     def __init__(self, env, env_conf):
         super(AtariRescale, self).__init__(env)
         self.observation_space = Box(0.0, 1.0, [1, 80, 80])
         self.conf = env_conf
 
     def _observation(self, observation_n):
-        return [_process_frame(observation, self.conf) for observation in observation_n]
+        return [
+            _process_frame(observation, self.conf)
+            for observation in observation_n
+        ]
 
 
 class NormalizedEnv(vectorized.ObservationWrapper):
-
     def __init__(self, env=None):
         super(NormalizedEnv, self).__init__(env)
         self.state_mean = 0
@@ -78,4 +79,5 @@ class NormalizedEnv(vectorized.ObservationWrapper):
         unbiased_mean = self.state_mean / (1 - pow(self.alpha, self.num_steps))
         unbiased_std = self.state_std / (1 - pow(self.alpha, self.num_steps))
 
-        return [(observation - unbiased_mean) / (unbiased_std + 1e-8) for observation in observation_n]
+        return [(observation - unbiased_mean) / (unbiased_std + 1e-8)
+                for observation in observation_n]
