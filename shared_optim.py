@@ -8,9 +8,16 @@ class SharedRMSprop(optim.RMSprop):
     """Implements RMSprop algorithm with shared states.
     """
 
-    def __init__(self, params, lr=1e-2, alpha=0.99, eps=1e-8, weight_decay=0, momentum=0, centered=False):
-        super(SharedRMSprop, self).__init__(params, lr,
-                                            alpha, eps, weight_decay, momentum, centered)
+    def __init__(self,
+                 params,
+                 lr=1e-2,
+                 alpha=0.99,
+                 eps=1e-8,
+                 weight_decay=0,
+                 momentum=0,
+                 centered=False):
+        super(SharedRMSprop, self).__init__(params, lr, alpha, eps,
+                                            weight_decay, momentum, centered)
 
         for group in self.param_groups:
             for p in group['params']:
@@ -18,8 +25,8 @@ class SharedRMSprop(optim.RMSprop):
                 state['step'] = torch.zeros(1)
                 state['grad_avg'] = p.data.new().resize_as_(p.data).zero_()
                 state['square_avg'] = p.data.new().resize_as_(p.data).zero_()
-                state['momentum_buffer'] = p.data.new(
-                ).resize_as_(p.data).zero_()
+                state['momentum_buffer'] = p.data.new().resize_as_(
+                    p.data).zero_()
 
     def share_memory(self):
         for group in self.param_groups:
@@ -60,8 +67,8 @@ class SharedRMSprop(optim.RMSprop):
                 if group['centered']:
                     grad_avg = state['grad_avg']
                     grad_avg.mul_(alpha).add_(1 - alpha, grad)
-                    avg = square_avg.addcmul(-1, grad_avg,
-                                             grad_avg).sqrt().add_(group['eps'])
+                    avg = square_avg.addcmul(
+                        -1, grad_avg, grad_avg).sqrt().add_(group['eps'])
                 else:
                     avg = square_avg.sqrt().add_(group['eps'])
 
@@ -79,7 +86,11 @@ class SharedAdam(optim.Adam):
     """Implements Adam algorithm with shared states.
     """
 
-    def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-3,
+    def __init__(self,
+                 params,
+                 lr=1e-3,
+                 betas=(0.9, 0.999),
+                 eps=1e-3,
                  weight_decay=0):
         super(SharedAdam, self).__init__(params, lr, betas, eps, weight_decay)
 
@@ -129,8 +140,8 @@ class SharedAdam(optim.Adam):
 
                 denom = exp_avg_sq.sqrt().add_(group['eps'])
 
-                bias_correction1 = 1 - beta1 ** state['step'][0]
-                bias_correction2 = 1 - beta2 ** state['step'][0]
+                bias_correction1 = 1 - beta1**state['step'][0]
+                bias_correction2 = 1 - beta2**state['step'][0]
                 step_size = group['lr'] * \
                     math.sqrt(bias_correction2) / bias_correction1
 
