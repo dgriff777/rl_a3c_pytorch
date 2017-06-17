@@ -1,6 +1,7 @@
 # RL A3C Pytorch
 
-![A3C LSTM playing Breakout-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Breakout.gif) ![A3C LSTM playing SpaceInvadersDeterministic-v3](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/SpaceInvaders.gif)
+![A3C LSTM playing Breakout-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Breakout.gif) ![A3C LSTM playing SpaceInvadersDeterministic-v3](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/SpaceInvaders.gif) ![A3C LSTM playing MsPacman-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/MsPacman.gif) ![A3C LSTM\
+ playing BeamRider-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/BeamRider.gif)
 
 This repository includes my implementation with reinforcement learning using Asynchronous Advantage Actor-Critic (A3C) in Pytorch an algorithm from Google Deep Mind's paper "Asynchronous Methods for Deep Reinforcement Learning."
 
@@ -17,6 +18,7 @@ link to the Gym environment evaluations below
 
 | Tables                                | Best 100 episode Avg | Best Score |
 | ------------------------------------- |:--------------------:| ----------:|
+<<<<<<< HEAD
 | [SpaceInvaders-v0] [1]                | 5808.45 ± 337.28     | 13380.0    |
 | [SpaceInvaders-v3] [2]                | 6944.85 ± 409.60     | 20440.0    |
 | [SpaceInvadersDeterministic-v3] [3]   | 44465.95 ± 893.61    | 79320.0    |
@@ -27,6 +29,18 @@ link to the Gym environment evaluations below
 | [PongDeterministic-v3] [8]            | 21.00 ± 0.00         |    21.0    |
 | [BeamRider-v0] [9]                    | 8441.22 ± 221.24     | 13130.0    |
 | [MsPacman-v0] [10]                    | 6323.01 ± 116.91     | 10181.0    |
+=======
+| [SpaceInvaders-v0][1]                | 5808.45 ± 337.28     | 13380.0    |
+| [SpaceInvaders-v3][2]                | 6944.85 ± 409.60     | 20440.0    |
+| [SpaceInvadersDeterministic-v3][3]   | 23863.70 ± 1078.83   | 53160.0    |
+| [Breakout-v0][4]                     | 739.30 ± 18.43       |   864.0    |
+| [Breakout-v3][5]                     | 859.57 ± 1.97        |   864.0    |
+| [Pong-v0][6]                         | 20.87 ± 0.04         |    21.0    |
+| [Pong-v3][7]                         | 20.94 ± 0.0          |    21.0    |
+| [PongDeterministic-v3][8]            | 21.00 ± 0.00         |    21.0    |
+| [BeamRider-v0][9]                    | 8441.22 ± 221.24     | 13130.0    |
+| [MsPacman-v0][10]                    | 6323.01 ± 116.91     | 10181.0    |
+>>>>>>> f2397ff0a5b5060ae6d817bc9a37ae1a6a742a0f
 
 [1]: https://gym.openai.com/evaluations/eval_K69ZjwAnSdOzN7lnUblqA#reproducibility
 [2]: https://gym.openai.com/evaluations/eval_uutLMdoQ9qvlnlM01Ptkg#reproducibility
@@ -38,10 +52,6 @@ link to the Gym environment evaluations below
 [8]: https://gym.openai.com/evaluations/eval_tM4E3BiQUOI14yMMa602A#reproducibility
 [9]: https://gym.openai.com/evaluations/eval_pl5bvWR8Somu8PfFJzTryA#reproducibility
 [10]: https://gym.openai.com/evaluations/eval_8Wwndzd8R62np8CxVQWEeg#reproducibility
-
-
-![A3C LSTM playing MsPacman-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/MsPacman.gif) ![A3C LSTM\
- playing BeamRider-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/BeamRider.gif) 
 
 
 ## Requirements
