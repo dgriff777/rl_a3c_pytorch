@@ -18,21 +18,21 @@ link to the Gym environment evaluations below
 
 | Tables                                | Best 100 episode Avg | Best Score |
 | ------------------------------------- |:--------------------:| ----------:|
-| [SpaceInvaders-v0][1]                | 5808.45 ± 337.28     | 13380.0    |
-| [SpaceInvaders-v3][2]                | 6944.85 ± 409.60     | 20440.0    |
-| [SpaceInvadersDeterministic-v3][3]   | 44465.95 ± 893.61    | 79320.0    |
-| [Breakout-v0][4]                     | 739.30 ± 18.43       |   864.0    |
-| [Breakout-v3][5]                     | 859.57 ± 1.97        |   864.0    |
-| [Pong-v0][6]                         | 20.87 ± 0.04         |    21.0    |
-| [Pong-v3][7]                         | 20.94 ± 0.03         |    21.0    |
-| [PongDeterministic-v3][8]            | 21.00 ± 0.00         |    21.0    |
-| [BeamRider-v0][9]                    | 8441.22 ± 221.24     | 13130.0    |
-| [MsPacman-v0][10]                    | 6323.01 ± 116.91     | 10181.0    |
+| [SpaceInvaders-v0][1]                | 5808.45 ± 337.28     |  13380.0   |
+| [SpaceInvaders-v3][2]                | 6944.85 ± 409.60     |  20440.0   |
+| [SpaceInvadersDeterministic-v3][3]   | 34704.85 ± 1928.76   | 150205.0   |
+| [Breakout-v0][4]                     | 739.30 ± 18.43       |    864.0   |
+| [Breakout-v3][5]                     | 859.57 ± 1.97        |    864.0   |
+| [Pong-v0][6]                         | 20.87 ± 0.04         |     21.0   |
+| [Pong-v3][7]                         | 20.94 ± 0.03         |     21.0   |
+| [PongDeterministic-v3][8]            | 21.00 ± 0.00         |     21.0   |
+| [BeamRider-v0][9]                    | 8441.22 ± 221.24     |  13130.0   |
+| [MsPacman-v0][10]                    | 6323.01 ± 116.91     |  10181.0   |
 
 
 [1]: https://gym.openai.com/evaluations/eval_K69ZjwAnSdOzN7lnUblqA#reproducibility
 [2]: https://gym.openai.com/evaluations/eval_uutLMdoQ9qvlnlM01Ptkg#reproducibility
-[3]: https://gym.openai.com/evaluations/eval_upM797lDREufS6KJoMojQ
+[3]: https://gym.openai.com/evaluations/eval_l96LQkhiT7Kz4YA7fzppw
 [4]: https://gym.openai.com/evaluations/eval_CyVPHgs0S22DiZsWXoPFw#reproducibility
 [5]: https://gym.openai.com/evaluations/eval_X3ywdh8pTmWFw51ISjZvvQ#reproducibility
 [6]: https://gym.openai.com/evaluations/eval_qZsD1qHORqCZWg7wPpmb0w#reproducibility
