@@ -20,7 +20,7 @@ link to the Gym environment evaluations below
 | ------------------------------------- |:---------------------:| -----------:|
 | [SpaceInvaders-v0][1]                 | 5808.45 ± 337.28      |   13380.0   |
 | [SpaceInvaders-v3][2]                 | 6944.85 ± 409.60      |   20440.0   |
-| [SpaceInvadersDeterministic-v3][3]    | 79060.10 ± 5826.59    | 167330.30   | *World Record Space Invaders score*
+| [SpaceInvadersDeterministic-v3][3]    | 79060.10 ± 5826.59    |  167330.0   | 
 | [Breakout-v0][4]                      | 739.30 ± 18.43        |     864.0   |
 | [Breakout-v3][5]                      | 859.57 ± 1.97         |     864.0   |
 | [Pong-v0][6]                          | 20.87 ± 0.04          |      21.0   |
@@ -41,6 +41,7 @@ link to the Gym environment evaluations below
 [9]: https://gym.openai.com/evaluations/eval_pl5bvWR8Somu8PfFJzTryA#reproducibility
 [10]: https://gym.openai.com/evaluations/eval_8Wwndzd8R62np8CxVQWEeg#reproducibility
 
+*The 167,330 SpaceInvaders score is World Record score and game ended due to GYM timestep limit*
 
 ## Requirements
 
