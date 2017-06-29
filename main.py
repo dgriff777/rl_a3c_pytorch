@@ -5,11 +5,12 @@ import argparse
 import sys
 import torch
 from torch.multiprocessing import Process, Lock
-from envs import atari_env, read_config
+from environment import atari_env
+from utils import read_config
 from model import A3Clstm
 from train import train
 from test import test
-import shared_optim
+from shared_optim import SharedRMSprop, SharedAdam
 import time
 
 parser = argparse.ArgumentParser(description='A3C')
@@ -38,10 +39,10 @@ parser.add_argument(
     metavar='S',
     help='random seed (default: 1)')
 parser.add_argument(
-    '--num-processes',
+    '--workers',
     type=int,
     default=32,
-    metavar='NP',
+    metavar='W',
     help='how many training processes to use (default: 32)')
 parser.add_argument(
     '--num-steps',
@@ -56,7 +57,7 @@ parser.add_argument(
     metavar='M',
     help='maximum length of an episode (default: 10000)')
 parser.add_argument(
-    '--env-name',
+    '--env',
     default='Pong-v0',
     metavar='ENV',
     help='environment to train on (default: Pong-v0)')
@@ -115,37 +116,32 @@ if __name__ == '__main__':
     setup_json = read_config(args.env_config)
     env_conf = setup_json["Default"]
     for i in setup_json.keys():
-        if i in args.env_name:
+        if i in args.env:
             env_conf = setup_json[i]
-    env = atari_env(args.env_name, env_conf)
+    env = atari_env(args.env, env_conf)
     shared_model = A3Clstm(env.observation_space.shape[0], env.action_space)
     if args.load:
-        saved_state = torch.load(
-            '{0}{1}.dat'.format(args.load_model_dir, args.env_name))
+        saved_state = torch.load('{0}{1}.dat'.format(args.load_model_dir, args.env))
         shared_model.load_state_dict(saved_state)
     shared_model.share_memory()
 
     if args.shared_optimizer:
         if args.optimizer == 'RMSprop':
-            optimizer = shared_optim.SharedRMSprop(
-                shared_model.parameters(), lr=args.lr)
+            optimizer = SharedRMSprop(shared_model.parameters(), lr=args.lr)
         if args.optimizer == 'Adam':
-            optimizer = shared_optim.SharedAdam(
-                shared_model.parameters(), lr=args.lr)
+            optimizer = SharedAdam(shared_model.parameters(), lr=args.lr)
         optimizer.share_memory()
     else:
         optimizer = None
 
     processes = []
 
-    p = Process(
-        target=test, args=(args.num_processes, args, shared_model, env_conf))
+    p = Process(target=test, args=(args, shared_model, env_conf))
     p.start()
     processes.append(p)
     time.sleep(0.1)
-    for rank in range(0, args.num_processes):
-        p = Process(
-            target=train, args=(rank, args, shared_model, optimizer, env_conf))
+    for rank in range(0, args.workers):
+        p = Process(target=train, args=(rank, args, shared_model, optimizer, env_conf))
         p.start()
         processes.append(p)
         time.sleep(0.1)

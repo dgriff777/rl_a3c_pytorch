@@ -55,7 +55,7 @@ link to the Gym environment evaluations below
 To train agent in Pong-v0 environment with 32 different worker threads:
 
 ```
-python main.py --env-name Pong-v0 --num-processes 32
+python main.py --env Pong-v0 --workers 32
 ```
 
 Hit Ctrl C to end training session properly
@@ -65,7 +65,7 @@ Hit Ctrl C to end training session properly
 ## Evaluation
 To run a 100 episode gym evaluation with trained model
 ```
-python gym_eval.py --env-name Pong-v0 --num-episodes 100
+python gym_eval.py --env Pong-v0 --workers 100
 ```
 
 ## Project Reference

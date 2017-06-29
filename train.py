@@ -2,23 +2,16 @@ from __future__ import division
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-from envs import atari_env
+from environment import atari_env
+from utils import ensure_shared_grads
 from model import A3Clstm
 from torch.autograd import Variable
-
-
-def ensure_shared_grads(model, shared_model):
-    for param, shared_param in zip(model.parameters(),
-                                   shared_model.parameters()):
-        if shared_param.grad is not None:
-            return
-        shared_param._grad = param.grad
 
 
 def train(rank, args, shared_model, optimizer, env_conf):
     torch.manual_seed(args.seed + rank)
 
-    env = atari_env(args.env_name, env_conf)
+    env = atari_env(args.env, env_conf)
     model = A3Clstm(env.observation_space.shape[0], env.action_space)
     _ = env.reset()
     action = env.action_space.sample()
@@ -37,6 +30,7 @@ def train(rank, args, shared_model, optimizer, env_conf):
     state = torch.from_numpy(state).float()
     done = True
     episode_length = 0
+    current_life = start_lives
     while True:
         episode_length += 1
         # Sync with the shared model
@@ -68,12 +62,15 @@ def train(rank, args, shared_model, optimizer, env_conf):
             state, reward, done, info = env.step(action.numpy())
             done = done or episode_length >= args.max_episode_length
             if args.count_lives:
-                if start_lives > info['ale.lives']:
+                if current_life > info['ale.lives']:
                     done = True
+                else:
+                    current_life = info['ale.lives']
             reward = max(min(reward, 1), -1)
 
             if done:
                 episode_length = 0
+                current_life = start_lives
                 state = env.reset()
 
             state = torch.from_numpy(state).float()
