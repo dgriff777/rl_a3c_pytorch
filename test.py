@@ -17,8 +17,7 @@ def test(args, shared_model, env_conf):
         '{}_log'.format(args.env))
     d_args = vars(args)
     for k in d_args.keys():
-        log['{}_log'.format(args.env)].info(
-            '{0}: {1}'.format(k, d_args[k]))
+        log['{}_log'.format(args.env)].info('{0}: {1}'.format(k, d_args[k]))
 
     torch.manual_seed(args.seed)
     env = atari_env(args.env, env_conf)
