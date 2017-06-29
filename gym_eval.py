@@ -34,8 +34,8 @@ parser.add_argument(
 parser.add_argument(
     '--log-dir', 
     default='logs/', 
-    metavar='LG', h
-    elp='folder to save logs')
+    metavar='LG', 
+    help='folder to save logs')
 parser.add_argument(
     '--render',
     default=False,
