@@ -7,6 +7,7 @@ from torch.autograd import Variable
 import json
 import logging
 
+
 def setup_logger(logger_name, log_file, level=logging.INFO):
     l = logging.getLogger(logger_name)
     formatter = logging.Formatter('%(asctime)s : %(message)s')
@@ -38,6 +39,7 @@ def ensure_shared_grads(model, shared_model):
         if shared_param.grad is not None:
             return
         shared_param._grad = param.grad
+
 
 def weights_init(m):
     classname = m.__class__.__name__

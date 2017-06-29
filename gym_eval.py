@@ -32,7 +32,10 @@ parser.add_argument(
     metavar='LMD',
     help='folder to load trained models from')
 parser.add_argument(
-    '--log-dir', default='logs/', metavar='LG', help='folder to save logs')
+    '--log-dir', 
+    default='logs/', 
+    metavar='LG', h
+    elp='folder to save logs')
 parser.add_argument(
     '--render',
     default=False,
@@ -59,14 +62,17 @@ for i in setup_json.keys():
         env_conf = setup_json[i]
 torch.set_default_tensor_type('torch.FloatTensor')
 
-saved_state = torch.load('{0}{1}.dat'.format(args.load_model_dir, args.env), map_location=lambda storage, loc: 
-storage)
+saved_state = torch.load(
+    '{0}{1}.dat'.format(args.load_model_dir, args.env),
+    map_location=lambda storage, loc: storage)
 
 done = True
 
 log = {}
-setup_logger('{}_mon_log'.format(args.env), r'{0}{1}_mon_log'.format(args.log_dir, args.env))
-log['{}_mon_log'.format(args.env)] = logging.getLogger('{}_mon_log'.format(args.env))
+setup_logger('{}_mon_log'.format(args.env), r'{0}{1}_mon_log'.format(
+    args.log_dir, args.env))
+log['{}_mon_log'.format(args.env)] = logging.getLogger(
+    '{}_mon_log'.format(args.env))
 
 env = atari_env("{}".format(args.env), env_conf)
 model = A3Clstm(env.observation_space.shape[0], env.action_space)
@@ -104,6 +110,8 @@ for i_episode in range(args.num_episodes):
             num_tests += 1
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
-            log['{}_mon_log'.format(args.env)].info("reward sum: {0}, reward mean: {1:.4f}".format(reward_sum, reward_mean))
+            log['{}_mon_log'.format(args.env)].info(
+                "reward sum: {0}, reward mean: {1:.4f}".format(
+                    reward_sum, reward_mean))
 
             break

@@ -10,7 +10,6 @@ import cv2
 import logging
 
 
-
 def atari_env(env_id, env_conf):
     env = gym.make(env_id)
     if len(env.observation_space.shape) > 1:
