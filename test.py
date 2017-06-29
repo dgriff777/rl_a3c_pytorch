@@ -1,26 +1,27 @@
 from __future__ import division
 import torch
 import torch.nn.functional as F
-from envs import atari_env, setup_logger
+from environment import atari_env
+from utils import setup_logger
 from model import A3Clstm
 from torch.autograd import Variable
 import time
 import logging
 
 
-def test(rank, args, shared_model, env_conf):
+def test(args, shared_model, env_conf):
     log = {}
-    setup_logger('{}_log'.format(args.env_name), r'{0}{1}_log'.format(
-        args.log_dir, args.env_name))
-    log['{}_log'.format(args.env_name)] = logging.getLogger(
-        '{}_log'.format(args.env_name))
+    setup_logger('{}_log'.format(args.env), r'{0}{1}_log'.format(
+        args.log_dir, args.env))
+    log['{}_log'.format(args.env)] = logging.getLogger(
+        '{}_log'.format(args.env))
     d_args = vars(args)
     for k in d_args.keys():
-        log['{}_log'.format(args.env_name)].info(
+        log['{}_log'.format(args.env)].info(
             '{0}: {1}'.format(k, d_args[k]))
 
     torch.manual_seed(args.seed)
-    env = atari_env(args.env_name, env_conf)
+    env = atari_env(args.env, env_conf)
     model = A3Clstm(env.observation_space.shape[0], env.action_space)
     model.eval()
 
@@ -55,7 +56,7 @@ def test(rank, args, shared_model, env_conf):
             num_tests += 1
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
-            log['{}_log'.format(args.env_name)].info(
+            log['{}_log'.format(args.env)].info(
                 "Time {0}, episode reward {1}, episode length {2}, reward mean {3:.4f}".
                 format(
                     time.strftime("%Hh %Mm %Ss",
@@ -66,7 +67,7 @@ def test(rank, args, shared_model, env_conf):
                 model.load_state_dict(shared_model.state_dict())
                 state_to_save = model.state_dict()
                 torch.save(state_to_save, '{0}{1}.dat'.format(
-                    args.save_model_dir, args.env_name))
+                    args.save_model_dir, args.env))
 
             reward_sum = 0
             episode_length = 0

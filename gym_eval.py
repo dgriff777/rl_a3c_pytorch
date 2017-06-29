@@ -2,7 +2,8 @@ from __future__ import division
 import argparse
 import torch
 import torch.nn.functional as F
-from envs import atari_env, read_config, setup_logger
+from environment import atari_env
+from utils import read_config, setup_logger
 from model import A3Clstm
 from torch.autograd import Variable
 import gym
@@ -10,7 +11,7 @@ import logging
 
 parser = argparse.ArgumentParser(description='A3C_EVAL')
 parser.add_argument(
-    '--env-name',
+    '--env',
     default='Pong-v0',
     metavar='ENV',
     help='environment to train on (default: Pong-v0)')
@@ -54,27 +55,24 @@ args = parser.parse_args()
 setup_json = read_config(args.env_config)
 env_conf = setup_json["Default"]
 for i in setup_json.keys():
-    if i in args.env_name:
+    if i in args.env:
         env_conf = setup_json[i]
 torch.set_default_tensor_type('torch.FloatTensor')
 
-saved_state = torch.load(
-    '{0}{1}.dat'.format(args.load_model_dir, args.env_name),
-    map_location=lambda storage, loc: storage)
+saved_state = torch.load('{0}{1}.dat'.format(args.load_model_dir, args.env), map_location=lambda storage, loc: 
+storage)
 
 done = True
 
 log = {}
-setup_logger('{}_mon_log'.format(args.env_name), r'{0}{1}_mon_log'.format(
-    args.log_dir, args.env_name))
-log['{}_mon_log'.format(args.env_name)] = logging.getLogger(
-    '{}_mon_log'.format(args.env_name))
+setup_logger('{}_mon_log'.format(args.env), r'{0}{1}_mon_log'.format(args.log_dir, args.env))
+log['{}_mon_log'.format(args.env)] = logging.getLogger('{}_mon_log'.format(args.env))
 
-env = atari_env("{}".format(args.env_name), env_conf)
+env = atari_env("{}".format(args.env), env_conf)
 model = A3Clstm(env.observation_space.shape[0], env.action_space)
 model.eval()
 
-env = gym.wrappers.Monitor(env, "{}_monitor".format(args.env_name), force=True)
+env = gym.wrappers.Monitor(env, "{}_monitor".format(args.env), force=True)
 num_tests = 0
 reward_total_sum = 0
 for i_episode in range(args.num_episodes):
@@ -106,8 +104,6 @@ for i_episode in range(args.num_episodes):
             num_tests += 1
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
-            log['{}_mon_log'.format(args.env_name)].info(
-                "reward sum: {0}, reward mean: {1:.4f}".format(
-                    reward_sum, reward_mean))
+            log['{}_mon_log'.format(args.env)].info("reward sum: {0}, reward mean: {1:.4f}".format(reward_sum, reward_mean))
 
             break
