@@ -41,7 +41,7 @@ link to the Gym environment evaluations below
 [9]: https://gym.openai.com/evaluations/eval_pl5bvWR8Somu8PfFJzTryA#reproducibility
 [10]: https://gym.openai.com/evaluations/eval_8Wwndzd8R62np8CxVQWEeg#reproducibility
 
-*The 167,330 SpaceInvaders score is World Record score and game ended due to GYM timestep limit*
+*The 167,330 Space Invaders score is World Record Space Invaders score and game ended only due to GYM timestep limit and not from loss of life*
 
 ## Requirements
 
