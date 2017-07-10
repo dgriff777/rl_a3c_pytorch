@@ -1,13 +1,13 @@
 # RL A3C Pytorch
 
 ![A3C LSTM playing Breakout-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Breakout.gif) ![A3C LSTM playing SpaceInvadersDeterministic-v3](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/SpaceInvaders.gif) ![A3C LSTM playing MsPacman-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/MsPacman.gif) ![A3C LSTM\
- playing BeamRider-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/BeamRider.gif)
+ playing BeamRider-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/BeamRider.gif) 
 
 This repository includes my implementation with reinforcement learning using Asynchronous Advantage Actor-Critic (A3C) in Pytorch an algorithm from Google Deep Mind's paper "Asynchronous Methods for Deep Reinforcement Learning."
 
 ### A3C LSTM
 
-I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. So far model currently has shown the best prerfomance I have seen for atari game environments.  Included in repo are trained models for SpaceInvaders-v0, MsPacman-v0, Breakout-v0, BeamRider-v0, Pong-v0 and Asteroids-v0 which have had very good performance and currently hold the top scores on openai gym leaderboard for each of those games. Saved models in trained_models folder. *Trained models may not run properly if you have recently updated gym and atari-py and have v4 atari versions as changes had effects on all other versions of atari games from update as well. To make sure they run properly u need to keep gym <= 0.8.2 and atari-py <= 0.0.21*
+I implemented an A3C LSTM model and trained it in the atari 2600 environments provided in the Openai Gym. So far model currently has shown the best prerfomance I have seen for atari game environments.  Included in repo are trained models for SpaceInvaders-v0, MsPacman-v0, Breakout-v0, BeamRider-v0, Pong-v0, Seaquest-v0 and Asteroids-v0 which have had very good performance and currently hold the best scores on openai gym leaderboard for each of those games(No plans on training model for any more atari games right now...). Saved models in trained_models folder. *Trained models may not run properly if you have recently updated gym and atari-py and have v4 atari versions as changes had effects on all other versions of atari games from update as well. To make sure they run properly u need to keep gym <= 0.8.2 and atari-py <= 0.0.21*
 
 Have optimizers using shared statistics for RMSProp and Adam available for use in training as well option to use non shared optimizer.
 
@@ -28,6 +28,7 @@ link to the Gym environment evaluations below
 | [PongDeterministic-v3][8]             | 21.00 ± 0.00          |      21.0   |
 | [BeamRider-v0][9]                     | 8441.22 ± 221.24      |   13130.0   |
 | [MsPacman-v0][10]                     | 6323.01 ± 116.91      |   10181.0   |
+| [Seaquest-v0][11]                     | 51340.40 ± 1493.41    |   90350.0   |
 
 
 [1]: https://gym.openai.com/evaluations/eval_K69ZjwAnSdOzN7lnUblqA#reproducibility
@@ -40,6 +41,7 @@ link to the Gym environment evaluations below
 [8]: https://gym.openai.com/evaluations/eval_tM4E3BiQUOI14yMMa602A#reproducibility
 [9]: https://gym.openai.com/evaluations/eval_pl5bvWR8Somu8PfFJzTryA#reproducibility
 [10]: https://gym.openai.com/evaluations/eval_8Wwndzd8R62np8CxVQWEeg#reproducibility
+[11]: https://gym.openai.com/evaluations/eval_ub7LjrSwCHaaJQ6N0fg#reproducibility
 
 *The 167,330 Space Invaders score is World Record Space Invaders score and game ended only due to GYM timestep limit and not from loss of life*
 
@@ -65,7 +67,7 @@ Hit Ctrl C to end training session properly
 ## Evaluation
 To run a 100 episode gym evaluation with trained model
 ```
-python gym_eval.py --env Pong-v0 --workers 100
+python gym_eval.py --env Pong-v0 --num-episodes 100
 ```
 
 ## Project Reference
