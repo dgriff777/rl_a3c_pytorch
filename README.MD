@@ -28,7 +28,7 @@ link to the Gym environment evaluations below
 | [PongDeterministic-v3][8]             | 21.00 ± 0.00          |      21.0   |
 | [BeamRider-v0][9]                     | 8441.22 ± 221.24      |   13130.0   |
 | [MsPacman-v0][10]                     | 6323.01 ± 116.91      |   10181.0   |
-| [Seaquest-v0][11]                     | 51340.40 ± 1493.41    |   90350.0   |
+| [Seaquest-v0][11]                     | 54203.50 ± 1509.85    |   88840.0   |
 
 
 [1]: https://gym.openai.com/evaluations/eval_K69ZjwAnSdOzN7lnUblqA#reproducibility
@@ -41,7 +41,7 @@ link to the Gym environment evaluations below
 [8]: https://gym.openai.com/evaluations/eval_tM4E3BiQUOI14yMMa602A#reproducibility
 [9]: https://gym.openai.com/evaluations/eval_pl5bvWR8Somu8PfFJzTryA#reproducibility
 [10]: https://gym.openai.com/evaluations/eval_8Wwndzd8R62np8CxVQWEeg#reproducibility
-[11]: https://gym.openai.com/evaluations/eval_ub7LjrSwCHaaJQ6N0fg#reproducibility
+[11]: https://gym.openai.com/evaluations/eval_uxYSMnhuTpCNLoPZ7DkxKQ
 
 *The 167,330 Space Invaders score is World Record Space Invaders score and game ended only due to GYM timestep limit and not from loss of life*
 
