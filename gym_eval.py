@@ -102,7 +102,7 @@ for i_episode in range(args.num_episodes):
             state.unsqueeze(0), volatile=True), (hx, cx)))
         prob = F.softmax(logit)
         action = prob.max(1)[1].data.numpy()
-        state, reward, done, _ = env.step(action[0, 0])
+        state, reward, done, _ = env.step(action[0])
         episode_length += 1
         reward_sum += reward
         done = done or episode_length >= args.max_episode_length
