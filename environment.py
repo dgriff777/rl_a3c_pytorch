@@ -5,9 +5,7 @@ from gym.spaces.box import Box
 from universe import vectorized
 from universe.wrappers import Unvectorize, Vectorize
 from skimage.color import rgb2gray
-import json
 import cv2
-import logging
 
 
 def atari_env(env_id, env_conf):

@@ -1,9 +1,6 @@
 from __future__ import division
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.autograd import Variable
 import json
 import logging
 
@@ -29,7 +26,7 @@ def read_config(file_path):
 
 def normalized_columns_initializer(weights, std=1.0):
     out = torch.randn(weights.size())
-    out *= std / torch.sqrt(out.pow(2).sum(1, keepdim=True).expand_as(out))
+    out *= std / torch.sqrt(out.pow(2).sum(1, keepdim=True))
     return out
 
 

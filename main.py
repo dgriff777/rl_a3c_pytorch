@@ -2,9 +2,8 @@ from __future__ import print_function, division
 import os
 os.environ["OMP_NUM_THREADS"] = "1"
 import argparse
-import sys
 import torch
-from torch.multiprocessing import Process, Lock
+from torch.multiprocessing import Process
 from environment import atari_env
 from utils import read_config
 from model import A3Clstm
@@ -72,9 +71,9 @@ parser.add_argument(
     metavar='SO',
     help='use an optimizer without shared statistics.')
 parser.add_argument(
-    '--load', 
-    default=False, 
-    metavar='L', 
+    '--load',
+    default=False,
+    metavar='L',
     help='load a trained model')
 parser.add_argument(
     '--save-score-level',
@@ -103,9 +102,9 @@ parser.add_argument(
     metavar='SMD',
     help='folder to save trained models')
 parser.add_argument(
-    '--log-dir', 
-    default='logs/', 
-    metavar='LG', 
+    '--log-dir',
+    default='logs/',
+    metavar='LG',
     help='folder to save logs')
 
 # Based on
