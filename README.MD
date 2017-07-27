@@ -23,12 +23,11 @@ link to the Gym environment evaluations below
 | [SpaceInvadersDeterministic-v3][3]    | 79060.10 ± 5826.59    |  167330.0   | 
 | [Breakout-v0][4]                      | 739.30 ± 18.43        |     864.0   |
 | [Breakout-v3][5]                      | 859.57 ± 1.97         |     864.0   |
-| [Pong-v0][6]                          | 20.87 ± 0.04          |      21.0   |
-| [Pong-v3][7]                          | 20.94 ± 0.03          |      21.0   |
-| [PongDeterministic-v3][8]             | 21.00 ± 0.00          |      21.0   |
-| [BeamRider-v0][9]                     | 8441.22 ± 221.24      |   13130.0   |
-| [MsPacman-v0][10]                     | 6323.01 ± 116.91      |   10181.0   |
-| [Seaquest-v0][11]                     | 54203.50 ± 1509.85    |   88840.0   |
+| [Pong-v0][6]                          | 20.96 ± 0.02          |      21.0   |
+| [PongDeterministic-v3][7]             | 21.00 ± 0.00          |      21.0   |
+| [BeamRider-v0][8]                     | 8441.22 ± 221.24      |   13130.0   |
+| [MsPacman-v0][9]                      | 6323.01 ± 116.91      |   10181.0   |
+| [Seaquest-v0][10]                     | 54203.50 ± 1509.85    |   88840.0   |
 
 
 [1]: https://gym.openai.com/evaluations/eval_K69ZjwAnSdOzN7lnUblqA#reproducibility
@@ -36,12 +35,11 @@ link to the Gym environment evaluations below
 [3]: https://gym.openai.com/evaluations/eval_rZMtqVVuRe28zDIQDYGKSw#reproducibility
 [4]: https://gym.openai.com/evaluations/eval_CyVPHgs0S22DiZsWXoPFw#reproducibility
 [5]: https://gym.openai.com/evaluations/eval_X3ywdh8pTmWFw51ISjZvvQ#reproducibility
-[6]: https://gym.openai.com/evaluations/eval_qZsD1qHORqCZWg7wPpmb0w#reproducibility
-[7]: https://gym.openai.com/evaluations/eval_DOrPDl1DSImVBTjGeF9Mw
-[8]: https://gym.openai.com/evaluations/eval_tM4E3BiQUOI14yMMa602A#reproducibility
-[9]: https://gym.openai.com/evaluations/eval_pl5bvWR8Somu8PfFJzTryA#reproducibility
-[10]: https://gym.openai.com/evaluations/eval_8Wwndzd8R62np8CxVQWEeg#reproducibility
-[11]: https://gym.openai.com/evaluations/eval_uxYSMnhuTpCNLoPZ7DkxKQ
+[6]: https://gym.openai.com/evaluations/eval_gquejvZS4m7pKYXCPbW3A
+[7]: https://gym.openai.com/evaluations/eval_tM4E3BiQUOI14yMMa602A#reproducibility
+[8]: https://gym.openai.com/evaluations/eval_pl5bvWR8Somu8PfFJzTryA#reproducibility
+[9]: https://gym.openai.com/evaluations/eval_8Wwndzd8R62np8CxVQWEeg#reproducibility
+[10]: https://gym.openai.com/evaluations/eval_uxYSMnhuTpCNLoPZ7DkxKQ
 
 *The 167,330 Space Invaders score is World Record Space Invaders score and game ended only due to GYM timestep limit and not from loss of life*
 

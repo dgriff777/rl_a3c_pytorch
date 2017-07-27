@@ -1,10 +1,12 @@
 from __future__ import division
+import os
+os.environ["OMP_NUM_THREADS"] = "1"
 import argparse
 import torch
-import torch.nn.functional as F
 from environment import atari_env
 from utils import read_config, setup_logger
 from model import A3Clstm
+from player_util import Agent, player_act, player_start
 from torch.autograd import Variable
 import gym
 import logging
@@ -32,9 +34,9 @@ parser.add_argument(
     metavar='LMD',
     help='folder to load trained models from')
 parser.add_argument(
-    '--log-dir', 
-    default='logs/', 
-    metavar='LG', 
+    '--log-dir',
+    default='logs/',
+    metavar='LG',
     help='folder to save logs')
 parser.add_argument(
     '--render',
@@ -66,8 +68,6 @@ saved_state = torch.load(
     '{0}{1}.dat'.format(args.load_model_dir, args.env),
     map_location=lambda storage, loc: storage)
 
-done = True
-
 log = {}
 setup_logger('{}_mon_log'.format(args.env), r'{0}{1}_mon_log'.format(
     args.log_dir, args.env))
@@ -76,37 +76,44 @@ log['{}_mon_log'.format(args.env)] = logging.getLogger(
 
 env = atari_env("{}".format(args.env), env_conf)
 model = A3Clstm(env.observation_space.shape[0], env.action_space)
-model.eval()
 
-env = gym.wrappers.Monitor(env, "{}_monitor".format(args.env), force=True)
 num_tests = 0
 reward_total_sum = 0
+player = Agent(model, env, args, state=None)
+player.env = gym.wrappers.Monitor(player.env, "{}_monitor".format(args.env), force=True)
+player.model.eval()
 for i_episode in range(args.num_episodes):
-    state = env.reset()
-    episode_length = 0
+    state = player.env.reset()
+    player.state = torch.from_numpy(state).float()
+    player.eps_len = 0
     reward_sum = 0
     while True:
         if args.render:
             if i_episode % args.render_freq == 0:
-                env.render()
-        if done:
-            model.load_state_dict(saved_state)
-            cx = Variable(torch.zeros(1, 512), volatile=True)
-            hx = Variable(torch.zeros(1, 512), volatile=True)
+                player.env.render()
+        if player.done:
+            player.model.load_state_dict(saved_state)
+            player.cx = Variable(torch.zeros(1, 512), volatile=True)
+            player.hx = Variable(torch.zeros(1, 512), volatile=True)
+            player = player_start(player, train=False)
         else:
-            cx = Variable(cx.data, volatile=True)
-            hx = Variable(hx.data, volatile=True)
+            player.cx = Variable(player.cx.data, volatile=True)
+            player.hx = Variable(player.hx.data, volatile=True)
 
-        state = torch.from_numpy(state).float()
-        value, logit, (hx, cx) = model((Variable(
-            state.unsqueeze(0), volatile=True), (hx, cx)))
-        prob = F.softmax(logit)
-        action = prob.max(1)[1].data.numpy()
-        state, reward, done, _ = env.step(action[0])
-        episode_length += 1
+        player, reward = player_act(player, train=False)
         reward_sum += reward
-        done = done or episode_length >= args.max_episode_length
-        if done:
+
+        if not player.done:
+            if player.current_life > player.info['ale.lives']:
+                player.flag = True
+                player.current_life = player.info['ale.lives']
+            else:
+                player.current_life = player.info['ale.lives']
+                player.flag = False
+        if player.flag:
+            player = player_start(player, train=False)
+
+        if player.done:
             num_tests += 1
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
