@@ -38,7 +38,8 @@ def test(args, shared_model, env_conf):
             player.model.load_state_dict(shared_model.state_dict())
             player.cx = Variable(torch.zeros(1, 512), volatile=True)
             player.hx = Variable(torch.zeros(1, 512), volatile=True)
-            player = player_start(player, train=False)
+            if player.starter:
+                player = player_start(player, train=False)
         else:
             player.cx = Variable(player.cx.data, volatile=True)
             player.hx = Variable(player.hx.data, volatile=True)
@@ -54,7 +55,7 @@ def test(args, shared_model, env_conf):
                 player.current_life = player.info['ale.lives']
                 player.flag = False
 
-        if player.flag:
+        if player.starter and player.flag:
             player = player_start(player, train=False)
 
         if player.done:

@@ -21,6 +21,7 @@ class Agent(object):
         self.done = True
         self.flag = False
         self.info = None
+        self.starter = False or args.env[:8] == 'Breakout'
 
 
 def player_act(player, train):

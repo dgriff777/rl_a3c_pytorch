@@ -33,7 +33,8 @@ def train(rank, args, shared_model, optimizer, env_conf):
         if player.done:
             player.cx = Variable(torch.zeros(1, 512))
             player.hx = Variable(torch.zeros(1, 512))
-            player = player_start(player, train=True)
+            if player.starter:
+                player = player_start(player, train=True)
         else:
             player.cx = Variable(player.cx.data)
             player.hx = Variable(player.hx.data)
@@ -56,7 +57,7 @@ def train(rank, args, shared_model, optimizer, env_conf):
                     player.done = True
                     break
 
-            if player.flag:
+            if player.starter and player.flag:
                 player = player_start(player, train=True)
             if player.done:
                 break

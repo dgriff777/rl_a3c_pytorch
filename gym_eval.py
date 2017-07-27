@@ -95,7 +95,8 @@ for i_episode in range(args.num_episodes):
             player.model.load_state_dict(saved_state)
             player.cx = Variable(torch.zeros(1, 512), volatile=True)
             player.hx = Variable(torch.zeros(1, 512), volatile=True)
-            player = player_start(player, train=False)
+            if player.starter:
+                player = player_start(player, train=False)
         else:
             player.cx = Variable(player.cx.data, volatile=True)
             player.hx = Variable(player.hx.data, volatile=True)
@@ -110,7 +111,7 @@ for i_episode in range(args.num_episodes):
             else:
                 player.current_life = player.info['ale.lives']
                 player.flag = False
-        if player.flag:
+        if player.starter and player.flag:
             player = player_start(player, train=False)
 
         if player.done:
