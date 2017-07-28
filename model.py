@@ -24,12 +24,8 @@ class A3Clstm(torch.nn.Module):
         self.actor_linear = nn.Linear(512, num_outputs)
 
         self.apply(weights_init)
-        self.actor_linear.weight.data = normalized_columns_initializer(
-            self.actor_linear.weight.data, 0.01)
-        self.actor_linear.bias.data.fill_(0)
-        self.critic_linear.weight.data = normalized_columns_initializer(
-            self.critic_linear.weight.data, 1.0)
-        self.critic_linear.bias.data.fill_(0)
+        self.actor_linear.reset_parameters()
+        self.critic_linear.reset_parameters()
 
         self.lstm.bias_ih.data.fill_(0)
         self.lstm.bias_hh.data.fill_(0)
