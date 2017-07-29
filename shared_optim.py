@@ -151,7 +151,7 @@ class SharedAdam(optim.Adam):
                     math.sqrt(bias_correction2) / bias_correction1
                 p.data.addcdiv_(-step_size, exp_avg, denom)
 
-        lr = sample_lr[int(state['step'][0] // 400000)]
+        lr = sample_lr[int(state['step'][0] // 4000000)]
         group['lr'] = lr
 
 
