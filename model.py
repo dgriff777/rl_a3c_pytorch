@@ -1,6 +1,7 @@
 from __future__ import division
 import torch
 import torch.nn as nn
+import torch.nn.init as init
 import torch.nn.functional as F
 from torch.autograd import Variable
 from utils import normalized_columns_initializer, weights_init

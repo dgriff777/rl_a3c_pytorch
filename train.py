@@ -27,6 +27,7 @@ def train(rank, args, shared_model, optimizer, env_conf):
     player = Agent(model, env, args, state)
     player.state = torch.from_numpy(state).float()
     player.model.train()
+    epoch=0
     while True:
 
         player.model.load_state_dict(shared_model.state_dict())
@@ -84,7 +85,7 @@ def train(rank, args, shared_model, optimizer, env_conf):
         for i in reversed(range(len(player.rewards))):
             R = args.gamma * R + player.rewards[i]
             advantage = R - player.values[i]
-            value_loss = value_loss + advantage.pow(2)
+            value_loss = value_loss + 0.5 * advantage.pow(2)
 
             # Generalized Advantage Estimataion
             delta_t = player.rewards[i] + args.gamma * \
@@ -97,7 +98,8 @@ def train(rank, args, shared_model, optimizer, env_conf):
 
         optimizer.zero_grad()
 
-        (policy_loss + 0.5 * value_loss).backward()
+        (policy_loss + value_loss).backward()
+
 
         ensure_shared_grads(player.model, shared_model)
         optimizer.step()
@@ -105,3 +107,4 @@ def train(rank, args, shared_model, optimizer, env_conf):
         player.log_probs = []
         player.rewards = []
         player.entropies = []
+
