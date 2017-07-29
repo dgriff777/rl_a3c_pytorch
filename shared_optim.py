@@ -3,6 +3,7 @@ import math
 import torch
 import torch.optim as optim
 
+sample_lr =[0.0001, 9e-05, 8.1e-05, 7.290000000000001e-05, 6.561000000000002e-05, 5.904900000000002e-05, 5.314410000000002e-05, 4.782969000000002e-05, 4.304672100000002e-05, 3.874204890000002e-05, 3.4867844010000016e-05, 3.138105960900002e-05, 2.8242953648100018e-05, 2.5418658283290016e-05, 2.2876792454961016e-05, 2.0589113209464913e-05, 1.8530201888518422e-05, 1.667718169966658e-05, 1.5009463529699922e-05, 1.350851717672993e-05, 1.2157665459056937e-05]
 
 class SharedRMSprop(optim.RMSprop):
     """Implements RMSprop algorithm with shared states.
@@ -35,7 +36,7 @@ class SharedRMSprop(optim.RMSprop):
                 state['square_avg'].share_memory_()
                 state['step'].share_memory_()
                 state['grad_avg'].share_memory_()
-                state['momentum_buffer'].share_memory_()
+
 
     def step(self, closure=None):
         """Performs a single optimization step.
@@ -46,6 +47,7 @@ class SharedRMSprop(optim.RMSprop):
         loss = None
         if closure is not None:
             loss = closure()
+        
 
         for group in self.param_groups:
             for p in group['params']:
@@ -109,6 +111,7 @@ class SharedAdam(optim.Adam):
                 state['exp_avg'].share_memory_()
                 state['exp_avg_sq'].share_memory_()
 
+
     def step(self, closure=None):
         """Performs a single optimization step.
         Arguments:
@@ -118,6 +121,8 @@ class SharedAdam(optim.Adam):
         loss = None
         if closure is not None:
             loss = closure()
+
+
 
         for group in self.param_groups:
             for p in group['params']:
@@ -144,7 +149,12 @@ class SharedAdam(optim.Adam):
                 bias_correction2 = 1 - beta2**state['step'][0]
                 step_size = group['lr'] * \
                     math.sqrt(bias_correction2) / bias_correction1
-
                 p.data.addcdiv_(-step_size, exp_avg, denom)
 
+        lr = sample_lr[int(state['step'][0] // 400000)]
+        group['lr'] = lr
+
+
         return loss
+
+
