@@ -9,7 +9,7 @@ from utils import read_config
 from model import A3Clstm
 from train import train
 from test import test
-from shared_optim import SharedRMSprop, SharedAdam
+from shared_optim import SharedRMSprop, SharedAdam, SharedLrSchedAdam
 import time
 
 parser = argparse.ArgumentParser(description='A3C')
@@ -136,6 +136,8 @@ if __name__ == '__main__':
             optimizer = SharedRMSprop(shared_model.parameters(), lr=args.lr)
         if args.optimizer == 'Adam':
             optimizer = SharedAdam(shared_model.parameters(), lr=args.lr)
+        if args.optimizer == 'LrSchedAdam':
+            optimizer = SharedLrSchedAdam(shared_model.parameters(), lr=args.lr)
         optimizer.share_memory()
     else:
         optimizer = None

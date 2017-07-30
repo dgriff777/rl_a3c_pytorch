@@ -84,7 +84,79 @@ class SharedRMSprop(optim.RMSprop):
         return loss
 
 
+
 class SharedAdam(optim.Adam):
+    """Implements Adam algorithm with shared states.
+    """
+
+    def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-3,
+                 weight_decay=0):
+        super(SharedAdam, self).__init__(params, lr, betas, eps, weight_decay)
+
+        for group in self.param_groups:
+            for p in group['params']:
+                state = self.state[p]
+                state['step'] = torch.zeros(1)
+                state['exp_avg'] = p.data.new().resize_as_(p.data).zero_()
+                state['exp_avg_sq'] = p.data.new().resize_as_(p.data).zero_()
+
+    def share_memory(self):
+        for group in self.param_groups:
+            for p in group['params']:
+                state = self.state[p]
+                state['step'].share_memory_()
+                state['exp_avg'].share_memory_()
+                state['exp_avg_sq'].share_memory_()
+
+    def step(self, closure=None):
+        """Performs a single optimization step.
+        Arguments:
+            closure (callable, optional): A closure that reevaluates the model
+                and returns the loss.
+        """
+        loss = None
+        if closure is not None:
+            loss = closure()
+
+        for group in self.param_groups:
+            for p in group['params']:
+                if p.grad is None:
+                    continue
+                grad = p.grad.data
+                state = self.state[p]
+
+                exp_avg, exp_avg_sq = state['exp_avg'], state['exp_avg_sq']
+                beta1, beta2 = group['betas']
+
+                state['step'] += 1
+
+                if group['weight_decay'] != 0:
+                    grad = grad.add(group['weight_decay'], p.data)
+
+                # Decay the first and second moment running average coefficient
+                exp_avg.mul_(beta1).add_(1 - beta1, grad)
+                exp_avg_sq.mul_(beta2).addcmul_(1 - beta2, grad, grad)
+
+                denom = exp_avg_sq.sqrt().add_(group['eps'])
+
+                bias_correction1 = 1 - beta1 ** state['step'][0]
+                bias_correction2 = 1 - beta2 ** state['step'][0]
+                step_size = group['lr'] * \
+                    math.sqrt(bias_correction2) / bias_correction1
+
+                p.data.addcdiv_(-step_size, exp_avg, denom)
+
+        return loss
+
+
+sample_lr =[0.0001, 9e-05, 8.1e-05, 7.290000000000001e-05, 6.561000000000002e-05, 5.904900000000002e-05, 
+5.314410000000002e-05, 4.782969000000002e-05, 4.304672100000002e-05, 3.874204890000002e-05, 
+3.4867844010000016e-05, 3.138105960900002e-05, 2.8242953648100018e-05, 2.5418658283290016e-05, 
+2.2876792454961016e-05, 2.0589113209464913e-05, 1.8530201888518422e-05, 1.667718169966658e-05, 
+1.5009463529699922e-05, 1.350851717672993e-05, 1.2157665459056937e-05]
+
+
+class SharedLrSchedAdam(optim.Adam):
     """Implements Adam algorithm with shared states.
     """
 
@@ -94,7 +166,7 @@ class SharedAdam(optim.Adam):
                  betas=(0.9, 0.999),
                  eps=1e-3,
                  weight_decay=0):
-        super(SharedAdam, self).__init__(params, lr, betas, eps, weight_decay)
+        super(SharedLrSchedAdam, self).__init__(params, lr, betas, eps, weight_decay)
 
         for group in self.param_groups:
             for p in group['params']:
@@ -151,7 +223,7 @@ class SharedAdam(optim.Adam):
                     math.sqrt(bias_correction2) / bias_correction1
                 p.data.addcdiv_(-step_size, exp_avg, denom)
 
-        lr = sample_lr[int(state['step'][0] // 4000000)]
+        lr = sample_lr[int(state['step'][0] // 40000000)]
         group['lr'] = lr
 
 
