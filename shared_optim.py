@@ -194,6 +194,9 @@ class SharedLrSchedAdam(optim.Adam):
         if closure is not None:
             loss = closure()
 
+        lr = sample_lr[int(state['step'][0] // 40000000)]
+        group['lr'] = lr
+
         for group in self.param_groups:
             for p in group['params']:
                 if p.grad is None:
@@ -220,8 +223,5 @@ class SharedLrSchedAdam(optim.Adam):
                 step_size = group['lr'] * \
                     math.sqrt(bias_correction2) / bias_correction1
                 p.data.addcdiv_(-step_size, exp_avg, denom)
-
-        lr = sample_lr[int(state['step'][0] // 40000000)]
-        group['lr'] = lr
 
         return loss
