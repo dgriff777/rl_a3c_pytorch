@@ -33,19 +33,20 @@ def test(args, shared_model, env_conf):
     player.state = torch.from_numpy(state).float()
     player.model.eval()
     while True:
-
-        if player.done:
+        if player.starter and player.flag:
+            player = player_start(player)
+        if player.done and not player.flag:
             player.model.load_state_dict(shared_model.state_dict())
             player.cx = Variable(torch.zeros(1, 512), volatile=True)
             player.hx = Variable(torch.zeros(1, 512), volatile=True)
-            if player.starter:
-                player = player_start(player, train=False)
-        else:
+            player.flag = False
+        elif not player.flag:
             player.cx = Variable(player.cx.data, volatile=True)
             player.hx = Variable(player.hx.data, volatile=True)
-
-        player, reward = player_act(player, train=False)
-        reward_sum += reward
+            player.flag = False
+        if not player.flag:
+            player, reward = player_act(player, train=False)
+            reward_sum += reward
 
         if not player.done:
             if player.current_life > player.info['ale.lives']:
@@ -55,13 +56,10 @@ def test(args, shared_model, env_conf):
                 player.current_life = player.info['ale.lives']
                 player.flag = False
 
-        if player.starter and player.flag:
-            player = player_start(player, train=False)
-
         if player.done:
             num_tests += 1
             player.current_life = 0
-            player.flag = False
+            player.flag = True
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
             log['{}_log'.format(args.env)].info(
