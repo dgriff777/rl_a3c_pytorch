@@ -5,7 +5,9 @@ from gym.spaces.box import Box
 from universe import vectorized
 from universe.wrappers import Unvectorize, Vectorize
 from skimage.color import rgb2gray
-import cv2
+from cv2 import resize
+#from skimage.transform import resize
+#from scipy.misc import imresize as resize
 
 
 def atari_env(env_id, env_conf):
@@ -20,8 +22,8 @@ def atari_env(env_id, env_conf):
 
 def _process_frame(frame, conf):
     frame = frame[conf["crop1"]:conf["crop2"] + 160, :160]
-    frame = cv2.resize(rgb2gray(frame), (80, conf["dimension2"]))
-    frame = cv2.resize(frame, (80, 80))
+    frame = resize(rgb2gray(frame), (80, conf["dimension2"]))
+    frame = resize(frame, (80, 80))
     frame = np.reshape(frame, [1, 80, 80])
     return frame
 
