@@ -31,18 +31,20 @@ def train(rank, args, shared_model, optimizer, env_conf):
     while True:
 
         player.model.load_state_dict(shared_model.state_dict())
-        if player.done:
+        if player.starter and player.flag:
+            player = player_start(player)
+        if player.done and not player.flag:
             player.cx = Variable(torch.zeros(1, 512))
             player.hx = Variable(torch.zeros(1, 512))
-            if player.starter:
-                player = player_start(player, train=True)
-        else:
+            player.flag = False
+        elif not player.flag:
             player.cx = Variable(player.cx.data)
             player.hx = Variable(player.hx.data)
+            player.flag = False
 
         for step in range(args.num_steps):
-
-            player = player_act(player, train=True)
+            if not player.flag:
+                player = player_act(player, train=True)
 
             if player.done:
                 break
@@ -53,14 +55,10 @@ def train(rank, args, shared_model, optimizer, env_conf):
             else:
                 player.current_life = player.info['ale.lives']
                 player.flag = False
-            if args.count_lives:
-                if player.flag:
-                    player.done = True
-                    break
-
-            if player.starter and player.flag:
-                player = player_start(player, train=True)
-            if player.done:
+            if args.count_lives and player.flag:
+                player.done = True
+                break
+            if player.flag and player.starter:
                 break
 
         if player.done:
@@ -68,7 +66,7 @@ def train(rank, args, shared_model, optimizer, env_conf):
             player.current_life = 0
             state = player.env.reset()
             player.state = torch.from_numpy(state).float()
-            player.flag = False
+            player.flag = True
 
         R = torch.zeros(1, 1)
         if not player.done:
@@ -98,7 +96,7 @@ def train(rank, args, shared_model, optimizer, env_conf):
 
         optimizer.zero_grad()
 
-        (policy_loss + value_loss).backward()
+        (policy_loss + 0.5 * value_loss).backward()
 
 
         ensure_shared_grads(player.model, shared_model)

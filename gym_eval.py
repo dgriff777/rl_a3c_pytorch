@@ -91,18 +91,20 @@ for i_episode in range(args.num_episodes):
         if args.render:
             if i_episode % args.render_freq == 0:
                 player.env.render()
-        if player.done:
-            player.model.load_state_dict(saved_state)
+        if player.starter and player.flag:
+            player = player_start(player)
+        if player.done and not player.flag:
+            player.model.load_state_dict(shared_model.state_dict())
             player.cx = Variable(torch.zeros(1, 512), volatile=True)
             player.hx = Variable(torch.zeros(1, 512), volatile=True)
-            if player.starter:
-                player = player_start(player, train=False)
-        else:
+            player.flag = False
+        elif not player.flag:
             player.cx = Variable(player.cx.data, volatile=True)
             player.hx = Variable(player.hx.data, volatile=True)
-
-        player, reward = player_act(player, train=False)
-        reward_sum += reward
+            player.flag = False
+        if not player.flag:
+            player, reward = player_act(player, train=False)
+            reward_sum += reward
 
         if not player.done:
             if player.current_life > player.info['ale.lives']:
@@ -111,10 +113,10 @@ for i_episode in range(args.num_episodes):
             else:
                 player.current_life = player.info['ale.lives']
                 player.flag = False
-        if player.starter and player.flag:
-            player = player_start(player, train=False)
 
         if player.done:
+            player.flag = True
+            player.current_life = 0
             num_tests += 1
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
