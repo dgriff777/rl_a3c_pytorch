@@ -10,9 +10,9 @@ class SharedRMSprop(optim.RMSprop):
 
     def __init__(self,
                  params,
-                 lr=1e-2,
+                 lr=7e-4,
                  alpha=0.99,
-                 eps=1e-8,
+                 eps=0.1,
                  weight_decay=0,
                  momentum=0,
                  centered=False):
