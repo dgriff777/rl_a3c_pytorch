@@ -93,8 +93,10 @@ for i_episode in range(args.num_episodes):
                 player.env.render()
         if player.starter and player.flag:
             player = player_start(player)
+        else:
+            player.flag =False
         if player.done and not player.flag:
-            player.model.load_state_dict(shared_model.state_dict())
+            player.model.load_state_dict(saved_state)
             player.cx = Variable(torch.zeros(1, 512), volatile=True)
             player.hx = Variable(torch.zeros(1, 512), volatile=True)
             player.flag = False
