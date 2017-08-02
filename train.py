@@ -33,6 +33,8 @@ def train(rank, args, shared_model, optimizer, env_conf):
         player.model.load_state_dict(shared_model.state_dict())
         if player.starter and player.flag:
             player = player_start(player)
+        else:
+            player.flag =False
         if player.done and not player.flag:
             player.cx = Variable(torch.zeros(1, 512))
             player.hx = Variable(torch.zeros(1, 512))

@@ -35,6 +35,8 @@ def test(args, shared_model, env_conf):
     while True:
         if player.starter and player.flag:
             player = player_start(player)
+        else:
+            player.flag =False
         if player.done and not player.flag:
             player.model.load_state_dict(shared_model.state_dict())
             player.cx = Variable(torch.zeros(1, 512), volatile=True)
