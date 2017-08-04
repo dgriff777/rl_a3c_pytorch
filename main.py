@@ -92,6 +92,11 @@ parser.add_argument(
     metavar='CL',
     help='end of life is end of training episode.')
 parser.add_argument(
+    '--trigger-start',
+    default=False,
+    metavar='TS',
+    help='trigger start of life')
+parser.add_argument(
     '--load-model-dir',
     default='trained_models/',
     metavar='LMD',
@@ -137,7 +142,8 @@ if __name__ == '__main__':
         if args.optimizer == 'Adam':
             optimizer = SharedAdam(shared_model.parameters(), lr=args.lr)
         if args.optimizer == 'LrSchedAdam':
-            optimizer = SharedLrSchedAdam(shared_model.parameters(), lr=args.lr)
+            optimizer = SharedLrSchedAdam(
+                shared_model.parameters(), lr=args.lr)
         optimizer.share_memory()
     else:
         optimizer = None
