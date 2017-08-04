@@ -6,7 +6,7 @@ import torch
 from environment import atari_env
 from utils import read_config, setup_logger
 from model import A3Clstm
-from player_util import Agent, player_act, player_start
+from player_util import Agent
 from torch.autograd import Variable
 import gym
 import logging
@@ -38,6 +38,11 @@ parser.add_argument(
     default='logs/',
     metavar='LG',
     help='folder to save logs')
+parser.add_argument(
+    '--trigger-start',
+    default=False,
+    metavar='TS',
+    help='trigger start of life')
 parser.add_argument(
     '--render',
     default=False,
@@ -80,7 +85,8 @@ model = A3Clstm(env.observation_space.shape[0], env.action_space)
 num_tests = 0
 reward_total_sum = 0
 player = Agent(model, env, args, state=None)
-player.env = gym.wrappers.Monitor(player.env, "{}_monitor".format(args.env), force=True)
+player.env = gym.wrappers.Monitor(
+    player.env, "{}_monitor".format(args.env), force=True)
 player.model.eval()
 for i_episode in range(args.num_episodes):
     state = player.env.reset()
@@ -91,33 +97,33 @@ for i_episode in range(args.num_episodes):
         if args.render:
             if i_episode % args.render_freq == 0:
                 player.env.render()
-        if player.starter and player.flag:
-            player = player_start(player)
+        if args.trigger_start and player.life_over:
+            player.start()
         else:
-            player.flag =False
-        if player.done and not player.flag:
+            player.life_over = False
+        if player.done and not player.life_over:
             player.model.load_state_dict(saved_state)
             player.cx = Variable(torch.zeros(1, 512), volatile=True)
             player.hx = Variable(torch.zeros(1, 512), volatile=True)
-            player.flag = False
-        elif not player.flag:
+            player.life_over = False
+        elif not player.life_over:
             player.cx = Variable(player.cx.data, volatile=True)
             player.hx = Variable(player.hx.data, volatile=True)
-            player.flag = False
-        if not player.flag:
-            player, reward = player_act(player, train=False)
-            reward_sum += reward
+            player.life_over = False
+        if not player.life_over:
+            player.action(train=False)
+            reward_sum += player.reward
 
         if not player.done:
             if player.current_life > player.info['ale.lives']:
-                player.flag = True
+                player.life_over = True
                 player.current_life = player.info['ale.lives']
             else:
                 player.current_life = player.info['ale.lives']
-                player.flag = False
+                player.life_over = False
 
         if player.done:
-            player.flag = True
+            player.life_over = True
             player.current_life = 0
             num_tests += 1
             reward_total_sum += reward_sum

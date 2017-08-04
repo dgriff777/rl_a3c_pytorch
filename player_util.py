@@ -19,52 +19,50 @@ class Agent(object):
         self.rewards = []
         self.entropies = []
         self.done = True
-        self.flag = True
+        self.life_over = True
         self.info = None
-        self.starter = False or args.env[:8] == 'Breakout'
+        self.reward = 0
 
-
-def player_act(player, train):
-    if train:
-        value, logit, (player.hx, player.cx) = player.model(
-            (Variable(player.state.unsqueeze(0)), (player.hx, player.cx)))
-    else:
-        value, logit, (player.hx, player.cx) = player.model((Variable(
-            player.state.unsqueeze(0), volatile=True), (player.hx, player.cx)))
+    def action(self, train):
+        if train:
+            value, logit, (self.hx, self.cx) = self.model(
+                (Variable(self.state.unsqueeze(0)), (self.hx, self.cx)))
+        else:
+            value, logit, (self.hx, self.cx) = self.model(
+                (Variable(self.state.unsqueeze(0), volatile=True), (self.hx, self.cx)))
+            prob = F.softmax(logit)
+            action = prob.max(1)[1].data.numpy()
+            state, self.reward, self.done, self.info = self.env.step(action[0])
+            self.state = torch.from_numpy(state).float()
+            self.eps_len += 1
+            self.done = self.done or self.eps_len >= self.args.max_episode_length
+            return self
         prob = F.softmax(logit)
-        action = prob.max(1)[1].data.numpy()
-        state, reward, player.done, player.info = player.env.step(action[0])
-        player.state = torch.from_numpy(state).float()
-        player.eps_len += 1
-        player.done = player.done or player.eps_len >= player.args.max_episode_length
-        return player, reward
-    prob = F.softmax(logit)
-    log_prob = F.log_softmax(logit)
-    entropy = -(log_prob * prob).sum(1)
-    player.entropies.append(entropy)
-    action = prob.multinomial().data
-    log_prob = log_prob.gather(1, Variable(action))
-    state, reward, player.done, player.info = player.env.step(action.numpy())
-    player.state = torch.from_numpy(state).float()
-    player.eps_len += 1
-    player.done = player.done or player.eps_len >= player.args.max_episode_length
-    reward = max(min(reward, 1), -1)
-    player.values.append(value)
-    player.log_probs.append(log_prob)
-    player.rewards.append(reward)
-    return player
+        log_prob = F.log_softmax(logit)
+        entropy = -(log_prob * prob).sum(1)
+        self.entropies.append(entropy)
+        action = prob.multinomial().data
+        log_prob = log_prob.gather(1, Variable(action))
+        state, self.reward, self.done, self.info = self.env.step(
+            action.numpy())
+        self.state = torch.from_numpy(state).float()
+        self.eps_len += 1
+        self.done = self.done or self.eps_len >= self.args.max_episode_length
+        self.reward = max(min(self.reward, 1), -1)
+        self.values.append(value)
+        self.log_probs.append(log_prob)
+        self.rewards.append(self.reward)
+        return self
 
-
-def player_start(player):
-    player.flag = False
-    for i in range(3):
-        state, reward, done, player.info = player.env.step(1)
-        player.state = torch.from_numpy(state).float()
-        player.eps_len += 1
-        done = done or player.eps_len >= player.args.max_episode_length
-        if done:
-            player.done=True
-            player.flag=True
-            return player 
-    return player
-
+    def start(self):
+        self.life_over = False
+        for i in range(3):
+            state, self.reward, done, self.info = self.env.step(1)
+            self.state = torch.from_numpy(state).float()
+            self.eps_len += 1
+            done = done or self.eps_len >= self.args.max_episode_length
+            if done:
+                self.done = True
+                self.life_over = True
+                break
+        return self

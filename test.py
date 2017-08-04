@@ -3,7 +3,7 @@ import torch
 from environment import atari_env
 from utils import setup_logger
 from model import A3Clstm
-from player_util import Agent, player_act, player_start
+from player_util import Agent
 from torch.autograd import Variable
 import time
 import logging
@@ -23,7 +23,6 @@ def test(args, shared_model, env_conf):
     env = atari_env(args.env, env_conf)
     model = A3Clstm(env.observation_space.shape[0], env.action_space)
 
-
     state = env.reset()
     reward_sum = 0
     start_time = time.time()
@@ -33,35 +32,35 @@ def test(args, shared_model, env_conf):
     player.state = torch.from_numpy(state).float()
     player.model.eval()
     while True:
-        if player.starter and player.flag:
-            player = player_start(player)
+        if args.trigger_start and player.life_over:
+            player.start()
         else:
-            player.flag =False
-        if player.done and not player.flag:
+            player.life_over = False
+        if player.done and not player.life_over:
             player.model.load_state_dict(shared_model.state_dict())
             player.cx = Variable(torch.zeros(1, 512), volatile=True)
             player.hx = Variable(torch.zeros(1, 512), volatile=True)
-            player.flag = False
-        elif not player.flag:
+            player.life_over = False
+        elif not player.life_over:
             player.cx = Variable(player.cx.data, volatile=True)
             player.hx = Variable(player.hx.data, volatile=True)
-            player.flag = False
-        if not player.flag:
-            player, reward = player_act(player, train=False)
-            reward_sum += reward
+            player.life_over = False
+        if not player.life_over:
+            player.action(train=False)
+            reward_sum += player.reward
 
         if not player.done:
             if player.current_life > player.info['ale.lives']:
-                player.flag = True
+                player.life_over = True
                 player.current_life = player.info['ale.lives']
             else:
                 player.current_life = player.info['ale.lives']
-                player.flag = False
+                player.life_over = False
 
         if player.done:
             num_tests += 1
             player.current_life = 0
-            player.flag = True
+            player.life_over = True
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
             log['{}_log'.format(args.env)].info(
