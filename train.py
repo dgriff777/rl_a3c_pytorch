@@ -26,7 +26,6 @@ def train(rank, args, shared_model, optimizer, env_conf):
     player = Agent(model, env, args, state)
     player.state = torch.from_numpy(state).float()
     player.model.train()
-    epoch = 0
     while True:
 
         player.model.load_state_dict(shared_model.state_dict())
