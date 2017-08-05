@@ -21,15 +21,15 @@ def test(args, shared_model, env_conf):
 
     torch.manual_seed(args.seed)
     env = atari_env(args.env, env_conf)
-    model = A3Clstm(env.observation_space.shape[0], env.action_space)
 
-    state = env.reset()
     reward_sum = 0
     start_time = time.time()
     num_tests = 0
     reward_total_sum = 0
-    player = Agent(model, env, args, state)
-    player.state = torch.from_numpy(state).float()
+    player = Agent(None, env, args, None)
+    player.model = A3Clstm(player.env.observation_space.shape[0], player.env.action_space)
+    player.state = player.env.reset()
+    player.state = torch.from_numpy(player.state).float()
     player.model.eval()
     while True:
         if args.trigger_start and player.life_over:

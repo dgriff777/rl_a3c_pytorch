@@ -87,17 +87,17 @@ for k in d_args.keys():
     log['{}_mon_log'.format(args.env)].info('{0}: {1}'.format(k, d_args[k]))
 
 env = atari_env("{}".format(args.env), env_conf)
-model = A3Clstm(env.observation_space.shape[0], env.action_space)
 
 num_tests = 0
 reward_total_sum = 0
-player = Agent(model, env, args, state=None)
+player = Agent(None, env, args, None)
+player.model = A3Clstm(player.env.observation_space.shape[0], player.env.action_space)
 player.env = gym.wrappers.Monitor(
     player.env, "{}_monitor".format(args.env), force=True)
 player.model.eval()
 for i_episode in range(args.num_episodes):
-    state = player.env.reset()
-    player.state = torch.from_numpy(state).float()
+    player.state = player.env.reset()
+    player.state = torch.from_numpy(player.state).float()
     player.eps_len = 0
     reward_sum = 0
     while True:
