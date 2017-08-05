@@ -13,7 +13,6 @@ def train(rank, args, shared_model, optimizer, env_conf):
     torch.manual_seed(args.seed + rank)
 
     env = atari_env(args.env, env_conf)
-    model = A3Clstm(env.observation_space.shape[0], env.action_space)
 
     if optimizer is None:
         if args.optimizer == 'RMSprop':
@@ -22,9 +21,10 @@ def train(rank, args, shared_model, optimizer, env_conf):
             optimizer = optim.Adam(shared_model.parameters(), lr=args.lr)
 
     env.seed(args.seed + rank)
-    state = env.reset()
-    player = Agent(model, env, args, state)
-    player.state = torch.from_numpy(state).float()
+    player = Agent(None, env, args, None)
+    player.model = A3Clstm(player.env.observation_space.shape[0], player.env.action_space)
+    player.state = player.env.reset()
+    player.state = torch.from_numpy(player.state).float()
     player.model.train()
     while True:
 
@@ -98,7 +98,7 @@ def train(rank, args, shared_model, optimizer, env_conf):
         optimizer.zero_grad()
 
         (policy_loss + 0.5 * value_loss).backward()
-
+        torch.nn.utils.clip_grad_norm(player.model.parameters(), 40)
         ensure_shared_grads(player.model, shared_model)
         optimizer.step()
         player.values = []
