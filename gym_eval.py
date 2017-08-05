@@ -82,6 +82,10 @@ setup_logger('{}_mon_log'.format(args.env), r'{0}{1}_mon_log'.format(
 log['{}_mon_log'.format(args.env)] = logging.getLogger(
     '{}_mon_log'.format(args.env))
 
+d_args = vars(args)
+for k in d_args.keys():
+    log['{}_mon_log'.format(args.env)].info('{0}: {1}'.format(k, d_args[k]))
+
 env = atari_env("{}".format(args.env), env_conf)
 model = A3Clstm(env.observation_space.shape[0], env.action_space)
 
