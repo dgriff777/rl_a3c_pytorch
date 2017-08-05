@@ -10,6 +10,9 @@ from player_util import Agent
 from torch.autograd import Variable
 import gym
 import logging
+from gym.configuration import undo_logger_setup
+
+undo_logger_setup()
 
 parser = argparse.ArgumentParser(description='A3C_EVAL')
 parser.add_argument(
