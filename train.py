@@ -49,12 +49,13 @@ def train(rank, args, shared_model, optimizer, env_conf):
             if player.done:
                 break
 
-            if player.current_life > player.info['ale.lives']:
-                player.life_over = True
-                player.current_life = player.info['ale.lives']
-            else:
-                player.current_life = player.info['ale.lives']
-                player.life_over = False
+            if args.count_lives or args.trigger_start:
+                if player.current_life > player.info['ale.lives']:
+                    player.life_over = True
+                    player.current_life = player.info['ale.lives']
+                else:
+                    player.current_life = player.info['ale.lives']
+                    player.life_over = False
             if args.count_lives and player.life_over:
                 player.done = True
                 break

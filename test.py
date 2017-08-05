@@ -49,7 +49,7 @@ def test(args, shared_model, env_conf):
             player.action(train=False)
             reward_sum += player.reward
 
-        if not player.done:
+        if not player.done and args.trigger_start:
             if player.current_life > player.info['ale.lives']:
                 player.life_over = True
                 player.current_life = player.info['ale.lives']
