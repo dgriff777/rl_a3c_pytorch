@@ -21,16 +21,16 @@ class A3Clstm(torch.nn.Module):
 
         self.lstm = nn.LSTMCell(1024, 512)
         num_outputs = action_space.n
-        self.value = nn.Linear(512, 1)
-        self.policy = nn.Linear(512, num_outputs)
+        self.critic_linear = nn.Linear(512, 1)
+        self.actor_linear = nn.Linear(512, num_outputs)
 
         self.apply(weights_init)
-        self.policy.weight.data = norm_col_init(
-            self.policy.weight.data, 0.01)
-        self.policy.bias.data.fill_(0)
-        self.value.weight.data = norm_col_init(
-            self.value.weight.data, 1.0)
-        self.value.bias.data.fill_(0)
+        self.actor_linear.weight.data = norm_col_init(
+            self.actor_linear.weight.data, 0.01)
+        self.actor_linear.bias.data.fill_(0)
+        self.critic_linear.weight.data = norm_col_init(
+            self.critic_linear.weight.data, 1.0)
+        self.critic_linear.bias.data.fill_(0)
 
         self.lstm.bias_ih.data.fill_(0)
         self.lstm.bias_hh.data.fill_(0)
@@ -50,4 +50,4 @@ class A3Clstm(torch.nn.Module):
 
         x = hx
 
-        return self.value(x), self.policy(x), (hx, cx)
+        return self.critic_linear(x), self.actor_linear(x), (hx, cx)
