@@ -14,7 +14,7 @@ def test(args, shared_model, env_conf):
     setup_logger('{}_log'.format(args.env), r'{0}{1}_log'.format(
         args.log_dir, args.env))
     log['{}_log'.format(args.env)] = logging.getLogger(
-                                     '{}_log'.format(args.env))
+        '{}_log'.format(args.env))
     d_args = vars(args)
     for k in d_args.keys():
         log['{}_log'.format(args.env)].info('{0}: {1}'.format(k, d_args[k]))
@@ -26,7 +26,8 @@ def test(args, shared_model, env_conf):
     num_tests = 0
     reward_total_sum = 0
     player = Agent(None, env, args, None)
-    player.model = A3Clstm(player.env.observation_space.shape[0], player.env.action_space)
+    player.model = A3Clstm(
+        player.env.observation_space.shape[0], player.env.action_space)
     player.state = player.env.reset()
     player.state = torch.from_numpy(player.state).float()
     player.model.eval()
