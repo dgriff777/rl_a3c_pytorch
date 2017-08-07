@@ -76,7 +76,7 @@ log = {}
 setup_logger('{}_mon_log'.format(args.env), r'{0}{1}_mon_log'.format(
     args.log_dir, args.env))
 log['{}_mon_log'.format(args.env)] = logging.getLogger(
-                                     '{}_mon_log'.format(args.env))
+    '{}_mon_log'.format(args.env))
 
 d_args = vars(args)
 for k in d_args.keys():
@@ -86,7 +86,8 @@ env = atari_env("{}".format(args.env), env_conf)
 num_tests = 0
 reward_total_sum = 0
 player = Agent(None, env, args, None)
-player.model = A3Clstm(player.env.observation_space.shape[0], player.env.action_space)
+player.model = A3Clstm(
+    player.env.observation_space.shape[0], player.env.action_space)
 player.env = gym.wrappers.Monitor(
     player.env, "{}_monitor".format(args.env), force=True)
 player.model.eval()
