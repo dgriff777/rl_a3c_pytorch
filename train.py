@@ -12,7 +12,6 @@ def train(rank, args, shared_model, optimizer, env_conf):
 
     torch.manual_seed(args.seed + rank)
     env = atari_env(args.env, env_conf)
-
     if optimizer is None:
         if args.optimizer == 'RMSprop':
             optimizer = optim.RMSprop(shared_model.parameters(), lr=args.lr)
@@ -29,10 +28,10 @@ def train(rank, args, shared_model, optimizer, env_conf):
 
     while True:
         player.model.load_state_dict(shared_model.state_dict())
-
         for step in range(args.num_steps):
             player.action(train=True)
-            player.check_state()
+            if args.count_lives:
+                player.check_state()
             if player.done:
                 break
 
@@ -41,7 +40,6 @@ def train(rank, args, shared_model, optimizer, env_conf):
             player.current_life = 0
             state = player.env.reset()
             player.state = torch.from_numpy(state).float()
-            player.life_over = True
 
         R = torch.zeros(1, 1)
         if not player.done:

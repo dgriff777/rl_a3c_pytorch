@@ -37,10 +37,7 @@ parser.add_argument(
     metavar='LMD',
     help='folder to load trained models from')
 parser.add_argument(
-    '--log-dir',
-    default='logs/',
-    metavar='LG',
-    help='folder to save logs')
+    '--log-dir', default='logs/', metavar='LG', help='folder to save logs')
 parser.add_argument(
     '--render',
     default=False,
@@ -85,8 +82,8 @@ env = atari_env("{}".format(args.env), env_conf)
 num_tests = 0
 reward_total_sum = 0
 player = Agent(None, env, args, None)
-player.model = A3Clstm(
-    player.env.observation_space.shape[0], player.env.action_space)
+player.model = A3Clstm(player.env.observation_space.shape[0],
+                       player.env.action_space)
 player.env = gym.wrappers.Monitor(
     player.env, "{}_monitor".format(args.env), force=True)
 player.model.eval()
@@ -96,7 +93,6 @@ for i_episode in range(args.num_episodes):
     player.state = torch.from_numpy(player.state).float()
     player.eps_len = 0
     reward_sum = 0
-
     while True:
         if args.render:
             if i_episode % args.render_freq == 0:
@@ -109,7 +105,6 @@ for i_episode in range(args.num_episodes):
         reward_sum += player.reward
 
         if player.done:
-            player.life_over = True
             player.current_life = 0
             num_tests += 1
             reward_total_sum += reward_sum

@@ -11,8 +11,8 @@ import logging
 
 def test(args, shared_model, env_conf):
     log = {}
-    setup_logger('{}_log'.format(args.env), r'{0}{1}_log'.format(
-        args.log_dir, args.env))
+    setup_logger('{}_log'.format(args.env),
+                 r'{0}{1}_log'.format(args.log_dir, args.env))
     log['{}_log'.format(args.env)] = logging.getLogger(
         '{}_log'.format(args.env))
     d_args = vars(args)
@@ -42,7 +42,6 @@ def test(args, shared_model, env_conf):
         if player.done:
             num_tests += 1
             player.current_life = 0
-            player.life_over = True
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
             log['{}_log'.format(args.env)].info(
