@@ -72,7 +72,6 @@ saved_state = torch.load(
     map_location=lambda storage, loc: storage)
 
 log = {}
-
 setup_logger('{}_mon_log'.format(args.env), r'{0}{1}_mon_log'.format(
     args.log_dir, args.env))
 log['{}_mon_log'.format(args.env)] = logging.getLogger(
@@ -91,14 +90,14 @@ player.model = A3Clstm(
 player.env = gym.wrappers.Monitor(
     player.env, "{}_monitor".format(args.env), force=True)
 player.model.eval()
-for i_episode in range(args.num_episodes):
 
+for i_episode in range(args.num_episodes):
     player.state = player.env.reset()
     player.state = torch.from_numpy(player.state).float()
     player.eps_len = 0
     reward_sum = 0
-    while True:
 
+    while True:
         if args.render:
             if i_episode % args.render_freq == 0:
                 player.env.render()

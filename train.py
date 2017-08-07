@@ -11,7 +11,6 @@ from torch.autograd import Variable
 def train(rank, args, shared_model, optimizer, env_conf):
 
     torch.manual_seed(args.seed + rank)
-
     env = atari_env(args.env, env_conf)
 
     if optimizer is None:
@@ -27,12 +26,11 @@ def train(rank, args, shared_model, optimizer, env_conf):
     player.state = player.env.reset()
     player.state = torch.from_numpy(player.state).float()
     player.model.train()
-    while True:
 
+    while True:
         player.model.load_state_dict(shared_model.state_dict())
 
         for step in range(args.num_steps):
-
             player.action(train=True)
             player.check_state()
             if player.done:
@@ -47,7 +45,6 @@ def train(rank, args, shared_model, optimizer, env_conf):
 
         R = torch.zeros(1, 1)
         if not player.done:
-
             value, _, _ = player.model(
                 (Variable(player.state.unsqueeze(0)), (player.hx, player.cx)))
             R = value.data
@@ -72,7 +69,6 @@ def train(rank, args, shared_model, optimizer, env_conf):
                 Variable(gae) - 0.01 * player.entropies[i]
 
         optimizer.zero_grad()
-
         (policy_loss + 0.5 * value_loss).backward()
         torch.nn.utils.clip_grad_norm(player.model.parameters(), 40)
         ensure_shared_grads(player.model, shared_model)
