@@ -29,37 +29,12 @@ def train(rank, args, shared_model, optimizer, env_conf):
     while True:
 
         player.model.load_state_dict(shared_model.state_dict())
-        if args.trigger_start and player.life_over:
-            player.start()
-        else:
-            player.life_over = False
-        if player.done and not player.life_over:
-            player.cx = Variable(torch.zeros(1, 512))
-            player.hx = Variable(torch.zeros(1, 512))
-            player.life_over = False
-        elif not player.life_over:
-            player.cx = Variable(player.cx.data)
-            player.hx = Variable(player.hx.data)
-            player.life_over = False
 
         for step in range(args.num_steps):
-            if not player.life_over:
-                player.action(train=True)
 
+            player.action(train=True)
+            player.check_state()
             if player.done:
-                break
-
-            if args.count_lives or args.trigger_start:
-                if player.current_life > player.info['ale.lives']:
-                    player.life_over = True
-                    player.current_life = player.info['ale.lives']
-                else:
-                    player.current_life = player.info['ale.lives']
-                    player.life_over = False
-            if args.count_lives and player.life_over:
-                player.done = True
-                break
-            elif args.trigger_start and player.life_over:
                 break
 
         if player.done:
@@ -101,7 +76,4 @@ def train(rank, args, shared_model, optimizer, env_conf):
         torch.nn.utils.clip_grad_norm(player.model.parameters(), 40)
         ensure_shared_grads(player.model, shared_model)
         optimizer.step()
-        player.values = []
-        player.log_probs = []
-        player.rewards = []
-        player.entropies = []
+        player.clear_actions()

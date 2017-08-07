@@ -25,9 +25,21 @@ class Agent(object):
 
     def action(self, train):
         if train:
+            if self.done:
+                self.cx = Variable(torch.zeros(1, 512))
+                self.hx = Variable(torch.zeros(1, 512))
+            else:
+                self.cx = Variable(self.cx.data)
+                self.hx = Variable(self.hx.data)
             value, logit, (self.hx, self.cx) = self.model(
                 (Variable(self.state.unsqueeze(0)), (self.hx, self.cx)))
         else:
+            if self.done:
+                self.cx = Variable(torch.zeros(1, 512), volatile=True)
+                self.hx = Variable(torch.zeros(1, 512), volatile=True)
+            else:
+                self.cx = Variable(self.cx.data, volatile=True)
+                self.hx = Variable(self.hx.data, volatile=True)
             value, logit, (self.hx, self.cx) = self.model(
                 (Variable(self.state.unsqueeze(0), volatile=True), (self.hx, self.cx)))
             prob = F.softmax(logit)
@@ -54,15 +66,18 @@ class Agent(object):
         self.rewards.append(self.reward)
         return self
 
-    def start(self):
-        self.life_over = False
-        for i in range(3):
-            state, self.reward, done, self.info = self.env.step(1)
-            self.state = torch.from_numpy(state).float()
-            self.eps_len += 1
-            done = done or self.eps_len >= self.args.max_episode_length
-            if done:
+    def check_state(self):
+        if self.args.count_lives:
+            if self.current_life > self.info['ale.lives']:
                 self.done = True
-                self.life_over = True
-                break
+                self.current_life = self.info['ale.lives']
+            else:
+                self.current_life = self.info['ale.lives']
+        return self
+
+    def clear_actions(self):
+        self.values = []
+        self.log_probs = []
+        self.rewards = []
+        self.entropies = []
         return self

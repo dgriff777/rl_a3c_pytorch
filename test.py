@@ -14,14 +14,13 @@ def test(args, shared_model, env_conf):
     setup_logger('{}_log'.format(args.env), r'{0}{1}_log'.format(
         args.log_dir, args.env))
     log['{}_log'.format(args.env)] = logging.getLogger(
-        '{}_log'.format(args.env))
+                                     '{}_log'.format(args.env))
     d_args = vars(args)
     for k in d_args.keys():
         log['{}_log'.format(args.env)].info('{0}: {1}'.format(k, d_args[k]))
 
     torch.manual_seed(args.seed)
     env = atari_env(args.env, env_conf)
-
     reward_sum = 0
     start_time = time.time()
     num_tests = 0
@@ -32,30 +31,12 @@ def test(args, shared_model, env_conf):
     player.state = torch.from_numpy(player.state).float()
     player.model.eval()
     while True:
-        if args.trigger_start and player.life_over:
-            player.start()
-        else:
-            player.life_over = False
-        if player.done and not player.life_over:
-            player.model.load_state_dict(shared_model.state_dict())
-            player.cx = Variable(torch.zeros(1, 512), volatile=True)
-            player.hx = Variable(torch.zeros(1, 512), volatile=True)
-            player.life_over = False
-        elif not player.life_over:
-            player.cx = Variable(player.cx.data, volatile=True)
-            player.hx = Variable(player.hx.data, volatile=True)
-            player.life_over = False
-        if not player.life_over:
-            player.action(train=False)
-            reward_sum += player.reward
 
-        if not player.done and args.trigger_start:
-            if player.current_life > player.info['ale.lives']:
-                player.life_over = True
-                player.current_life = player.info['ale.lives']
-            else:
-                player.current_life = player.info['ale.lives']
-                player.life_over = False
+        if player.done:
+            player.model.load_state_dict(shared_model.state_dict())
+
+        player.action(train=False)
+        reward_sum += player.reward
 
         if player.done:
             num_tests += 1
