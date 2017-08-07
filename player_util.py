@@ -23,6 +23,7 @@ class Agent(object):
         self.info = None
         self.reward = 0
 
+
     def action(self, train):
         if train:
             if self.done:
@@ -66,6 +67,7 @@ class Agent(object):
         self.rewards.append(self.reward)
         return self
 
+
     def check_state(self):
         if self.args.count_lives:
             if self.current_life > self.info['ale.lives']:
@@ -74,6 +76,7 @@ class Agent(object):
             else:
                 self.current_life = self.info['ale.lives']
         return self
+
 
     def clear_actions(self):
         self.values = []
