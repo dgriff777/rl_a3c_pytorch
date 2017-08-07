@@ -42,11 +42,6 @@ parser.add_argument(
     metavar='LG',
     help='folder to save logs')
 parser.add_argument(
-    '--trigger-start',
-    default=False,
-    metavar='TS',
-    help='trigger start of life')
-parser.add_argument(
     '--render',
     default=False,
     metavar='R',
@@ -77,17 +72,17 @@ saved_state = torch.load(
     map_location=lambda storage, loc: storage)
 
 log = {}
+
 setup_logger('{}_mon_log'.format(args.env), r'{0}{1}_mon_log'.format(
     args.log_dir, args.env))
 log['{}_mon_log'.format(args.env)] = logging.getLogger(
-    '{}_mon_log'.format(args.env))
+                                     '{}_mon_log'.format(args.env))
 
 d_args = vars(args)
 for k in d_args.keys():
     log['{}_mon_log'.format(args.env)].info('{0}: {1}'.format(k, d_args[k]))
 
 env = atari_env("{}".format(args.env), env_conf)
-
 num_tests = 0
 reward_total_sum = 0
 player = Agent(None, env, args, None)
@@ -96,38 +91,22 @@ player.env = gym.wrappers.Monitor(
     player.env, "{}_monitor".format(args.env), force=True)
 player.model.eval()
 for i_episode in range(args.num_episodes):
+
     player.state = player.env.reset()
     player.state = torch.from_numpy(player.state).float()
     player.eps_len = 0
     reward_sum = 0
     while True:
+
         if args.render:
             if i_episode % args.render_freq == 0:
                 player.env.render()
-        if args.trigger_start and player.life_over:
-            player.start()
-        else:
-            player.life_over = False
-        if player.done and not player.life_over:
-            player.model.load_state_dict(saved_state)
-            player.cx = Variable(torch.zeros(1, 512), volatile=True)
-            player.hx = Variable(torch.zeros(1, 512), volatile=True)
-            player.life_over = False
-        elif not player.life_over:
-            player.cx = Variable(player.cx.data, volatile=True)
-            player.hx = Variable(player.hx.data, volatile=True)
-            player.life_over = False
-        if not player.life_over:
-            player.action(train=False)
-            reward_sum += player.reward
 
-        if not player.done and args.trigger_start:
-            if player.current_life > player.info['ale.lives']:
-                player.life_over = True
-                player.current_life = player.info['ale.lives']
-            else:
-                player.current_life = player.info['ale.lives']
-                player.life_over = False
+        if player.done:
+            player.model.load_state_dict(saved_state)
+
+        player.action(train=False)
+        reward_sum += player.reward
 
         if player.done:
             player.life_over = True

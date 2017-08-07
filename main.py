@@ -95,11 +95,6 @@ parser.add_argument(
     metavar='CL',
     help='end of life is end of training episode.')
 parser.add_argument(
-    '--trigger-start',
-    default=False,
-    metavar='TS',
-    help='trigger start of life')
-parser.add_argument(
     '--load-model-dir',
     default='trained_models/',
     metavar='LMD',
