@@ -29,7 +29,7 @@ def train(rank, args, shared_model, optimizer, env_conf):
     while True:
         player.model.load_state_dict(shared_model.state_dict())
         for step in range(args.num_steps):
-            player.action(train=True)
+            player.action_train()
             if args.count_lives:
                 player.check_state()
             if player.done:
