@@ -101,7 +101,7 @@ for i_episode in range(args.num_episodes):
         if player.done:
             player.model.load_state_dict(saved_state)
 
-        player.action(train=False)
+        player.action_test()
         reward_sum += player.reward
 
         if player.done:
