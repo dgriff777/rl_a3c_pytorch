@@ -46,7 +46,7 @@ class Agent(object):
         self.rewards.append(self.reward)
         return self
 
-    def action_test(self)
+    def action_test(self):
         if self.done:
             self.cx = Variable(torch.zeros(1, 512), volatile=True)
             self.hx = Variable(torch.zeros(1, 512), volatile=True)
