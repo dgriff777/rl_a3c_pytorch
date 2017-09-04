@@ -3,7 +3,7 @@ import os
 os.environ["OMP_NUM_THREADS"] = "1"
 import argparse
 import torch
-from torch.multiprocessing import Process
+import torch.multiprocessing as mp
 from environment import atari_env
 from utils import read_config
 from model import A3Clstm
@@ -119,6 +119,7 @@ parser.add_argument(
 if __name__ == '__main__':
     args = parser.parse_args()
     torch.set_default_tensor_type('torch.FloatTensor')
+    mp.set_start_method('spawn')
     torch.manual_seed(args.seed)
 
     setup_json = read_config(args.env_config)
@@ -148,12 +149,12 @@ if __name__ == '__main__':
 
     processes = []
 
-    p = Process(target=test, args=(args, shared_model, env_conf))
+    p = mp.Process(target=test, args=(args, shared_model, env_conf))
     p.start()
     processes.append(p)
     time.sleep(0.1)
     for rank in range(0, args.workers):
-        p = Process(
+        p = mp.Process(
             target=train, args=(rank, args, shared_model, optimizer, env_conf))
         p.start()
         processes.append(p)
