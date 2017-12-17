@@ -139,9 +139,6 @@ if __name__ == '__main__':
             optimizer = SharedRMSprop(shared_model.parameters(), lr=args.lr)
         if args.optimizer == 'Adam':
             optimizer = SharedAdam(shared_model.parameters(), lr=args.lr)
-        if args.optimizer == 'LrSchedAdam':
-            optimizer = SharedLrSchedAdam(
-                shared_model.parameters(), lr=args.lr)
         optimizer.share_memory()
     else:
         optimizer = None
