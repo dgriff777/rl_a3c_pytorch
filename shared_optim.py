@@ -2,9 +2,10 @@ from __future__ import division
 import math
 import torch
 import torch.optim as optim
+from collections import defaultdict
 
 
-class SharedRMSprop(optim.RMSprop):
+class SharedRMSprop(optim.Optimizer):
     """Implements RMSprop algorithm with shared states.
     """
 
@@ -16,8 +17,8 @@ class SharedRMSprop(optim.RMSprop):
                  weight_decay=0,
                  momentum=0,
                  centered=False):
-        super(SharedRMSprop, self).__init__(params, lr, alpha, eps,
-                                            weight_decay, momentum, centered)
+        defaults = defaultdict(lr=lr, alpha=alpha, eps=eps, weight_decay=weight_decay, momentum=momentum, centered=centered)
+        super(SharedRMSprop, self).__init__(params, defaults)
 
         for group in self.param_groups:
             for p in group['params']:
@@ -25,8 +26,8 @@ class SharedRMSprop(optim.RMSprop):
                 state['step'] = torch.zeros(1)
                 state['grad_avg'] = p.data.new().resize_as_(p.data).zero_()
                 state['square_avg'] = p.data.new().resize_as_(p.data).zero_()
-                state['momentum_buffer'] = p.data.new().resize_as_(
-                    p.data).zero_()
+                state['momentum_buffer'] = p.data.new().resize_as_(p.data).zero_()
+
 
     def share_memory(self):
         for group in self.param_groups:
@@ -52,6 +53,8 @@ class SharedRMSprop(optim.RMSprop):
                 if p.grad is None:
                     continue
                 grad = p.grad.data
+                if grad.is_sparse:
+                    raise RuntimeError('RMSprop does not support sparse gradients')
                 state = self.state[p]
 
                 square_avg = state['square_avg']
@@ -82,7 +85,7 @@ class SharedRMSprop(optim.RMSprop):
         return loss
 
 
-class SharedAdam(optim.Adam):
+class SharedAdam(optim.Optimizer):
     """Implements Adam algorithm with shared states.
     """
 
@@ -91,8 +94,10 @@ class SharedAdam(optim.Adam):
                  lr=1e-3,
                  betas=(0.9, 0.999),
                  eps=1e-3,
-                 weight_decay=0):
-        super(SharedAdam, self).__init__(params, lr, betas, eps, weight_decay)
+                 weight_decay=0, amsgrad=True):
+        defaults = defaultdict(lr=lr, betas=betas, eps=eps, weight_decay=weight_decay, amsgrad=amsgrad)
+        super(SharedAdam, self).__init__(params, defaults)
+
 
         for group in self.param_groups:
             for p in group['params']:
@@ -100,6 +105,8 @@ class SharedAdam(optim.Adam):
                 state['step'] = torch.zeros(1)
                 state['exp_avg'] = p.data.new().resize_as_(p.data).zero_()
                 state['exp_avg_sq'] = p.data.new().resize_as_(p.data).zero_()
+                state['max_exp_avg_sq'] = p.data.new().resize_as_(p.data).zero_()
+
 
     def share_memory(self):
         for group in self.param_groups:
@@ -108,6 +115,8 @@ class SharedAdam(optim.Adam):
                 state['step'].share_memory_()
                 state['exp_avg'].share_memory_()
                 state['exp_avg_sq'].share_memory_()
+                state['max_exp_avg_sq'].share_memory_()
+
 
     def step(self, closure=None):
         """Performs a single optimization step.
@@ -124,9 +133,15 @@ class SharedAdam(optim.Adam):
                 if p.grad is None:
                     continue
                 grad = p.grad.data
+                if grad.is_sparse:
+                    raise RuntimeError('Adam does not support sparse gradients, please consider SparseAdam instead')
+                amsgrad = group['amsgrad']
+
                 state = self.state[p]
 
                 exp_avg, exp_avg_sq = state['exp_avg'], state['exp_avg_sq']
+                if amsgrad:
+                    max_exp_avg_sq = state['max_exp_avg_sq']
                 beta1, beta2 = group['betas']
 
                 state['step'] += 1
@@ -138,7 +153,13 @@ class SharedAdam(optim.Adam):
                 exp_avg.mul_(beta1).add_(1 - beta1, grad)
                 exp_avg_sq.mul_(beta2).addcmul_(1 - beta2, grad, grad)
 
-                denom = exp_avg_sq.sqrt().add_(group['eps'])
+                if amsgrad:
+                    # Maintains the maximum of all 2nd moment running avg. till now
+                    torch.max(max_exp_avg_sq, exp_avg_sq, out=max_exp_avg_sq)
+                    # Use the max. for normalizing running avg. of gradient
+                    denom = max_exp_avg_sq.sqrt().add_(group['eps'])
+                else:
+                    denom = exp_avg_sq.sqrt().add_(group['eps'])
 
                 bias_correction1 = 1 - beta1**state['step'][0]
                 bias_correction2 = 1 - beta2**state['step'][0]
