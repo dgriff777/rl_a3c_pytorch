@@ -94,7 +94,8 @@ class SharedAdam(optim.Optimizer):
                  lr=1e-3,
                  betas=(0.9, 0.999),
                  eps=1e-3,
-                 weight_decay=0, amsgrad=True):
+                 weight_decay=0, 
+                 amsgrad=False):
         defaults = defaultdict(lr=lr, betas=betas, eps=eps, weight_decay=weight_decay, amsgrad=amsgrad)
         super(SharedAdam, self).__init__(params, defaults)
 
