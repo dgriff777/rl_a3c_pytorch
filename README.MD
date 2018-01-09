@@ -65,6 +65,15 @@ To train agent in Pong-v0 environment with 32 different worker threads:
 ```
 python main.py --env Pong-v0 --workers 32
 ```
+#A3C-GPU
+*training using machine with 4 V100 GPUs and 20core CPU for PongDeterministic-v4 took 10 minutes to converge*
+
+To train agent in PongDeterministic-v4 environment with 32 different worker threads with new A3C-GPU:
+
+```
+python main.py --env PongDeterministic-v4 --workers 32 --gpu-ids 0 1 2 3 --amsgrad True
+```
+
 
 Hit Ctrl C to end training session properly
 
