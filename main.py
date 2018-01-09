@@ -3,7 +3,7 @@ import os
 os.environ["OMP_NUM_THREADS"] = "1"
 import argparse
 import torch
-from torch.multiprocessing import Process
+import torch.multiprocessing as mp
 from environment import atari_env
 from utils import read_config
 from model import A3Clstm
@@ -109,6 +109,18 @@ parser.add_argument(
     default='logs/',
     metavar='LG',
     help='folder to save logs')
+parser.add_argument(
+    '--gpu-ids',
+    type=int,
+    default=-1,
+    nargs='+',
+    help='GPUs to use [-1 CPU only] (default: -1)')
+parser.add_argument(
+    '--amsgrad',
+    default=True,
+    metavar='AM',
+    help='Adam optimizer amsgrad parameter')
+
 
 # Based on
 # https://github.com/pytorch/examples/tree/master/mnist_hogwild
@@ -118,9 +130,12 @@ parser.add_argument(
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    torch.set_default_tensor_type('torch.FloatTensor')
     torch.manual_seed(args.seed)
-
+    if args.gpu_ids == -1:
+        args.gpu_ids = [-1]
+    else:
+        torch.cuda.manual_seed(args.seed)
+        mp.set_start_method('spawn')
     setup_json = read_config(args.env_config)
     env_conf = setup_json["Default"]
     for i in setup_json.keys():
@@ -129,8 +144,7 @@ if __name__ == '__main__':
     env = atari_env(args.env, env_conf)
     shared_model = A3Clstm(env.observation_space.shape[0], env.action_space)
     if args.load:
-        saved_state = torch.load(
-            '{0}{1}.dat'.format(args.load_model_dir, args.env))
+        saved_state = torch.load('{0}{1}.dat'.format(args.load_model_dir, args.env), map_location=lambda storage, loc: storage)
         shared_model.load_state_dict(saved_state)
     shared_model.share_memory()
 
@@ -138,23 +152,23 @@ if __name__ == '__main__':
         if args.optimizer == 'RMSprop':
             optimizer = SharedRMSprop(shared_model.parameters(), lr=args.lr)
         if args.optimizer == 'Adam':
-            optimizer = SharedAdam(shared_model.parameters(), lr=args.lr)
+            optimizer = SharedAdam(shared_model.parameters(), lr=args.lr, amsgrad=args.amsgrad)
         optimizer.share_memory()
     else:
         optimizer = None
 
     processes = []
 
-    p = Process(target=test, args=(args, shared_model, env_conf))
+    p = mp.Process(target=test, args=(args, shared_model, env_conf))
     p.start()
     processes.append(p)
     time.sleep(0.1)
     for rank in range(0, args.workers):
-        p = Process(
-            target=train, args=(rank, args, shared_model, optimizer, env_conf))
+        p = mp.Process(target=train, args=(rank, args, shared_model, optimizer, env_conf))
         p.start()
         processes.append(p)
         time.sleep(0.1)
     for p in processes:
         time.sleep(0.1)
         p.join()
+

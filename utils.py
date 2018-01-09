@@ -30,12 +30,15 @@ def norm_col_init(weights, std=1.0):
     return x
 
 
-def ensure_shared_grads(model, shared_model):
-    for param, shared_param in zip(model.parameters(),
-                                   shared_model.parameters()):
-        if shared_param.grad is not None:
+def ensure_shared_grads(model, shared_model, gpu=False):
+    for param, shared_param in zip(model.parameters(), shared_model.parameters()):
+        if shared_param.grad is not None and not gpu:
             return
-        shared_param._grad = param.grad
+        if not gpu:
+            shared_param._grad = param.grad
+        else:
+            shared_param._grad = param.grad.clone().cpu()
+
 
 
 def weights_init(m):
@@ -54,3 +57,4 @@ def weights_init(m):
         w_bound = np.sqrt(6. / (fan_in + fan_out))
         m.weight.data.uniform_(-w_bound, w_bound)
         m.bias.data.fill_(0)
+

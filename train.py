@@ -1,4 +1,5 @@
 from __future__ import division
+from setproctitle import setproctitle as ptitle
 import torch
 import torch.optim as optim
 from environment import atari_env
@@ -9,25 +10,37 @@ from torch.autograd import Variable
 
 
 def train(rank, args, shared_model, optimizer, env_conf):
-
+    ptitle('Training Agent: {}'.format(rank))
+    gpu_id = args.gpu_ids[rank%len(args.gpu_ids)]
     torch.manual_seed(args.seed + rank)
+    if gpu_id >= 0:
+        torch.cuda.manual_seed(args.seed + rank)
     env = atari_env(args.env, env_conf)
     if optimizer is None:
         if args.optimizer == 'RMSprop':
             optimizer = optim.RMSprop(shared_model.parameters(), lr=args.lr)
         if args.optimizer == 'Adam':
-            optimizer = optim.Adam(shared_model.parameters(), lr=args.lr)
-
+            optimizer = optim.Adam(shared_model.parameters(), lr=args.lr, amsgrad=args.amsgrad)
     env.seed(args.seed + rank)
     player = Agent(None, env, args, None)
+    player.gpu_id = gpu_id
     player.model = A3Clstm(
         player.env.observation_space.shape[0], player.env.action_space)
+
     player.state = player.env.reset()
     player.state = torch.from_numpy(player.state).float()
+    if gpu_id >= 0:
+        with torch.cuda.device(gpu_id):
+            player.state = player.state.cuda()
+            player.model = player.model.cuda()
     player.model.train()
 
     while True:
-        player.model.load_state_dict(shared_model.state_dict())
+        if gpu_id >= 0:
+            with torch.cuda.device(gpu_id):
+                player.model.load_state_dict(shared_model.state_dict())
+        else:
+            player.model.load_state_dict(shared_model.state_dict())
         for step in range(args.num_steps):
             player.action_train()
             if args.count_lives:
@@ -40,8 +53,15 @@ def train(rank, args, shared_model, optimizer, env_conf):
             player.current_life = 0
             state = player.env.reset()
             player.state = torch.from_numpy(state).float()
+            if gpu_id >= 0:
+                with torch.cuda.device(gpu_id):
+                    player.state = player.state.cuda()
 
-        R = torch.zeros(1, 1)
+        if gpu_id >= 0:
+            with torch.cuda.device(gpu_id):
+                R = torch.zeros(1, 1).cuda()
+        else:
+            R = torch.zeros(1, 1)
         if not player.done:
             value, _, _ = player.model(
                 (Variable(player.state.unsqueeze(0)), (player.hx, player.cx)))
@@ -51,7 +71,11 @@ def train(rank, args, shared_model, optimizer, env_conf):
         policy_loss = 0
         value_loss = 0
         R = Variable(R)
-        gae = torch.zeros(1, 1)
+        if gpu_id >= 0:
+            with torch.cuda.device(gpu_id):
+                gae = torch.zeros(1, 1).cuda()
+        else:
+            gae = torch.zeros(1, 1)
         for i in reversed(range(len(player.rewards))):
             R = args.gamma * R + player.rewards[i]
             advantage = R - player.values[i]
@@ -66,9 +90,10 @@ def train(rank, args, shared_model, optimizer, env_conf):
                 player.log_probs[i] * \
                 Variable(gae) - 0.01 * player.entropies[i]
 
-        optimizer.zero_grad()
+        player.model.zero_grad()
         (policy_loss + 0.5 * value_loss).backward()
         torch.nn.utils.clip_grad_norm(player.model.parameters(), 40)
-        ensure_shared_grads(player.model, shared_model)
+        ensure_shared_grads(player.model, shared_model, gpu=gpu_id >= 0)
         optimizer.step()
         player.clear_actions()
+

@@ -1,4 +1,5 @@
 from __future__ import division
+from setproctitle import setproctitle as ptitle
 import torch
 from environment import atari_env
 from utils import setup_logger
@@ -10,6 +11,8 @@ import logging
 
 
 def test(args, shared_model, env_conf):
+    ptitle('Test Agent')
+    gpu_id = args.gpu_ids[-1]
     log = {}
     setup_logger('{}_log'.format(args.env),
                  r'{0}{1}_log'.format(args.log_dir, args.env))
@@ -20,21 +23,33 @@ def test(args, shared_model, env_conf):
         log['{}_log'.format(args.env)].info('{0}: {1}'.format(k, d_args[k]))
 
     torch.manual_seed(args.seed)
+    if gpu_id >= 0:
+        torch.cuda.manual_seed(args.seed)
     env = atari_env(args.env, env_conf)
     reward_sum = 0
     start_time = time.time()
     num_tests = 0
     reward_total_sum = 0
     player = Agent(None, env, args, None)
+    player.gpu_id = gpu_id
     player.model = A3Clstm(
         player.env.observation_space.shape[0], player.env.action_space)
+
     player.state = player.env.reset()
     player.state = torch.from_numpy(player.state).float()
+    if gpu_id >= 0:
+        with torch.cuda.device(gpu_id):
+            player.model = player.model.cuda()
+            player.state = player.state.cuda()
     player.model.eval()
 
     while True:
         if player.done:
-            player.model.load_state_dict(shared_model.state_dict())
+            if gpu_id >= 0:
+                with torch.cuda.device(gpu_id):
+                    player.model.load_state_dict(shared_model.state_dict())
+            else:
+                player.model.load_state_dict(shared_model.state_dict())
 
         player.action_test()
         reward_sum += player.reward
@@ -62,3 +77,7 @@ def test(args, shared_model, env_conf):
             state = player.env.reset()
             time.sleep(60)
             player.state = torch.from_numpy(state).float()
+            if gpu_id >= 0:
+                with torch.cuda.device(gpu_id):
+                    player.state = player.state.cuda()
+
