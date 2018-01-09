@@ -17,8 +17,7 @@ class SharedRMSprop(optim.Optimizer):
                  weight_decay=0,
                  momentum=0,
                  centered=False):
-        defaults = defaultdict(lr=lr, alpha=alpha, eps=eps,
-                               weight_decay=weight_decay, momentum=momentum, centered=centered)
+        defaults = defaultdict(lr=lr, alpha=alpha, eps=eps, weight_decay=weight_decay, momentum=momentum, centered=centered)
         super(SharedRMSprop, self).__init__(params, defaults)
 
         for group in self.param_groups:
@@ -27,8 +26,8 @@ class SharedRMSprop(optim.Optimizer):
                 state['step'] = torch.zeros(1)
                 state['grad_avg'] = p.data.new().resize_as_(p.data).zero_()
                 state['square_avg'] = p.data.new().resize_as_(p.data).zero_()
-                state['momentum_buffer'] = p.data.new(
-                ).resize_as_(p.data).zero_()
+                state['momentum_buffer'] = p.data.new().resize_as_(p.data).zero_()
+
 
     def share_memory(self):
         for group in self.param_groups:
@@ -55,8 +54,7 @@ class SharedRMSprop(optim.Optimizer):
                     continue
                 grad = p.grad.data
                 if grad.is_sparse:
-                    raise RuntimeError(
-                        'RMSprop does not support sparse gradients')
+                    raise RuntimeError('RMSprop does not support sparse gradients')
                 state = self.state[p]
 
                 square_avg = state['square_avg']
@@ -96,11 +94,11 @@ class SharedAdam(optim.Optimizer):
                  lr=1e-3,
                  betas=(0.9, 0.999),
                  eps=1e-3,
-                 weight_decay=0,
+                 weight_decay=0, 
                  amsgrad=False):
-        defaults = defaultdict(lr=lr, betas=betas, eps=eps,
-                               weight_decay=weight_decay, amsgrad=amsgrad)
+        defaults = defaultdict(lr=lr, betas=betas, eps=eps, weight_decay=weight_decay, amsgrad=amsgrad)
         super(SharedAdam, self).__init__(params, defaults)
+
 
         for group in self.param_groups:
             for p in group['params']:
@@ -108,8 +106,8 @@ class SharedAdam(optim.Optimizer):
                 state['step'] = torch.zeros(1)
                 state['exp_avg'] = p.data.new().resize_as_(p.data).zero_()
                 state['exp_avg_sq'] = p.data.new().resize_as_(p.data).zero_()
-                state['max_exp_avg_sq'] = p.data.new(
-                ).resize_as_(p.data).zero_()
+                state['max_exp_avg_sq'] = p.data.new().resize_as_(p.data).zero_()
+
 
     def share_memory(self):
         for group in self.param_groups:
@@ -119,6 +117,7 @@ class SharedAdam(optim.Optimizer):
                 state['exp_avg'].share_memory_()
                 state['exp_avg_sq'].share_memory_()
                 state['max_exp_avg_sq'].share_memory_()
+
 
     def step(self, closure=None):
         """Performs a single optimization step.
@@ -136,8 +135,7 @@ class SharedAdam(optim.Optimizer):
                     continue
                 grad = p.grad.data
                 if grad.is_sparse:
-                    raise RuntimeError(
-                        'Adam does not support sparse gradients, please consider SparseAdam instead')
+                    raise RuntimeError('Adam does not support sparse gradients, please consider SparseAdam instead')
                 amsgrad = group['amsgrad']
 
                 state = self.state[p]
@@ -157,8 +155,7 @@ class SharedAdam(optim.Optimizer):
                 exp_avg_sq.mul_(beta2).addcmul_(1 - beta2, grad, grad)
 
                 if amsgrad:
-                    # Maintains the maximum of all 2nd moment running avg. till
-                    # now
+                    # Maintains the maximum of all 2nd moment running avg. till now
                     torch.max(max_exp_avg_sq, exp_avg_sq, out=max_exp_avg_sq)
                     # Use the max. for normalizing running avg. of gradient
                     denom = max_exp_avg_sq.sqrt().add_(group['eps'])
@@ -173,3 +170,4 @@ class SharedAdam(optim.Optimizer):
                 p.data.addcdiv_(-step_size, exp_avg, denom)
 
         return loss
+

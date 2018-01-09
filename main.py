@@ -144,8 +144,7 @@ if __name__ == '__main__':
     env = atari_env(args.env, env_conf)
     shared_model = A3Clstm(env.observation_space.shape[0], env.action_space)
     if args.load:
-        saved_state = torch.load('{0}{1}.dat'.format(
-            args.load_model_dir, args.env), map_location=lambda storage, loc: storage)
+        saved_state = torch.load('{0}{1}.dat'.format(args.load_model_dir, args.env), map_location=lambda storage, loc: storage)
         shared_model.load_state_dict(saved_state)
     shared_model.share_memory()
 
@@ -153,8 +152,7 @@ if __name__ == '__main__':
         if args.optimizer == 'RMSprop':
             optimizer = SharedRMSprop(shared_model.parameters(), lr=args.lr)
         if args.optimizer == 'Adam':
-            optimizer = SharedAdam(
-                shared_model.parameters(), lr=args.lr, amsgrad=args.amsgrad)
+            optimizer = SharedAdam(shared_model.parameters(), lr=args.lr, amsgrad=args.amsgrad)
         optimizer.share_memory()
     else:
         optimizer = None
@@ -166,11 +164,11 @@ if __name__ == '__main__':
     processes.append(p)
     time.sleep(0.1)
     for rank in range(0, args.workers):
-        p = mp.Process(target=train, args=(
-            rank, args, shared_model, optimizer, env_conf))
+        p = mp.Process(target=train, args=(rank, args, shared_model, optimizer, env_conf))
         p.start()
         processes.append(p)
         time.sleep(0.1)
     for p in processes:
         time.sleep(0.1)
         p.join()
+
