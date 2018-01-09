@@ -11,7 +11,7 @@ from torch.autograd import Variable
 
 def train(rank, args, shared_model, optimizer, env_conf):
     ptitle('Training Agent: {}'.format(rank))
-    gpu_id = args.gpu_ids[rank%len(args.gpu_ids)]
+    gpu_id = args.gpu_ids[rank % len(args.gpu_ids)]
     torch.manual_seed(args.seed + rank)
     if gpu_id >= 0:
         torch.cuda.manual_seed(args.seed + rank)
@@ -20,7 +20,8 @@ def train(rank, args, shared_model, optimizer, env_conf):
         if args.optimizer == 'RMSprop':
             optimizer = optim.RMSprop(shared_model.parameters(), lr=args.lr)
         if args.optimizer == 'Adam':
-            optimizer = optim.Adam(shared_model.parameters(), lr=args.lr, amsgrad=args.amsgrad)
+            optimizer = optim.Adam(
+                shared_model.parameters(), lr=args.lr, amsgrad=args.amsgrad)
     env.seed(args.seed + rank)
     player = Agent(None, env, args, None)
     player.gpu_id = gpu_id
@@ -96,4 +97,3 @@ def train(rank, args, shared_model, optimizer, env_conf):
         ensure_shared_grads(player.model, shared_model, gpu=gpu_id >= 0)
         optimizer.step()
         player.clear_actions()
-
