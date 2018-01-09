@@ -1,6 +1,7 @@
 
 [23]: https://github.com/dgriff777/a3c_continuous
 
+## NEWLY ADDED A3C-GPU VERSION AS WELL!!
 
 
 # RL A3C Pytorch
