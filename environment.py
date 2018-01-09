@@ -19,6 +19,7 @@ def _process_frame(frame, conf):
     frame = frame[conf["crop1"]:conf["crop2"] + 160, :160]
     frame = resize(rgb2gray(frame), (80, conf["dimension2"]))
     frame = resize(frame, (80, 80))
+    frame = np.float32(frame)
     frame = np.reshape(frame, [1, 80, 80])
     return frame
 
