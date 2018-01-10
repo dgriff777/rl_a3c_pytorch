@@ -54,7 +54,13 @@ def test(args, shared_model, env_conf):
         player.action_test()
         reward_sum += player.reward
 
-        if player.done:
+        if player.done and player.info['ale.lives'] > 0:
+            state = player.env.reset()
+            player.state = torch.from_numpy(state).float()
+            if gpu_id >= 0:
+                with torch.cuda.device(gpu_id):
+                    player.state = player.state.cuda()
+        elif player.done:
             num_tests += 1
             player.current_life = 0
             reward_total_sum += reward_sum

@@ -104,7 +104,10 @@ for i_episode in range(args.num_episodes):
         player.action_test()
         reward_sum += player.reward
 
-        if player.done:
+        if player.done and player.info['ale.lives'] > 0:
+            state = player.env.reset()
+            player.state = torch.from_numpy(state).float()
+        elif player.done:
             player.current_life = 0
             num_tests += 1
             reward_total_sum += reward_sum

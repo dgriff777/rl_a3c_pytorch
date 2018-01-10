@@ -10,6 +10,9 @@ from cv2 import resize
 
 def atari_env(env_id, env_conf):
     env = gym.make(env_id)
+    env = EpisodicLifeEnv(env)
+    if 'FIRE' in env.unwrapped.get_action_meanings():
+        env = FireResetEnv(env)
     env = AtariRescale(env, env_conf)
     env = NormalizedEnv(env)
     return env
@@ -17,9 +20,11 @@ def atari_env(env_id, env_conf):
 
 def _process_frame(frame, conf):
     frame = frame[conf["crop1"]:conf["crop2"] + 160, :160]
-    frame = resize(rgb2gray(frame), (80, conf["dimension2"]))
+    frame = frame.mean(2)
+    frame = frame.astype(np.float32)
+    frame *= (1.0 / 255.0)
+    frame = resize(frame, (80, conf["dimension2"]))
     frame = resize(frame, (80, 80))
-    frame = np.float32(frame)
     frame = np.reshape(frame, [1, 80, 80])
     return frame
 
@@ -53,3 +58,58 @@ class NormalizedEnv(gym.ObservationWrapper):
         unbiased_std = self.state_std / (1 - pow(self.alpha, self.num_steps))
 
         return (observation - unbiased_mean) / (unbiased_std + 1e-8)
+
+
+class EpisodicLifeEnv(gym.Wrapper):
+    def __init__(self, env):
+        """Make end-of-life == end-of-episode, but only reset on true game over.
+        Done by DeepMind for the DQN and co. since it helps value estimation.
+        """
+        gym.Wrapper.__init__(self, env)
+        self.lives = 0
+        self.was_real_done = True
+
+    def _step(self, action):
+        obs, reward, done, info = self.env.step(action)
+        self.was_real_done = done
+        # check current lives, make loss of life terminal,
+        # then update lives to handle bonus lives
+        lives = self.env.unwrapped.ale.lives()
+        if lives < self.lives and lives > 0:
+            # for Qbert sometimes we stay in lives == 0 condtion for a few frames
+            # so its important to keep lives > 0, so that we only reset once
+            # the environment advertises done.
+            done = True
+        self.lives = lives
+        return obs, reward, done, info
+
+    def _reset(self, **kwargs):
+        """Reset only when lives are exhausted.
+        This way all states are still reachable even though lives are episodic,
+        and the learner need not know about any of this behind-the-scenes.
+        """
+        if self.was_real_done:
+            obs = self.env.reset(**kwargs)
+        else:
+            # no-op step to advance from terminal/lost life state
+            obs, _, _, _ = self.env.step(0)
+        self.lives = self.env.unwrapped.ale.lives()
+        return obs
+
+
+class FireResetEnv(gym.Wrapper):
+    def __init__(self, env):
+        """Take action on reset for environments that are fixed until firing."""
+        gym.Wrapper.__init__(self, env)
+        assert env.unwrapped.get_action_meanings()[1] == 'FIRE'
+        assert len(env.unwrapped.get_action_meanings()) >= 3
+
+    def _reset(self, **kwargs):
+        self.env.reset(**kwargs)
+        obs, _, done, _ = self.env.step(1)
+        if done:
+            self.env.reset(**kwargs)
+        obs, _, done, _ = self.env.step(2)
+        if done:
+            self.env.reset(**kwargs)
+        return obs
