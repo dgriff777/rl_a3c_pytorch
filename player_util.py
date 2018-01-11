@@ -50,7 +50,6 @@ class Agent(object):
             with torch.cuda.device(self.gpu_id):
                 self.state = self.state.cuda()
         self.eps_len += 1
-        self.done = self.done or self.eps_len >= self.args.max_episode_length
         self.reward = max(min(self.reward, 1), -1)
         self.values.append(value)
         self.log_probs.append(log_prob)
@@ -81,7 +80,6 @@ class Agent(object):
             with torch.cuda.device(self.gpu_id):
                 self.state = self.state.cuda()
         self.eps_len += 1
-        self.done = self.done or self.eps_len >= self.args.max_episode_length
         return self
 
     def check_state(self):
@@ -96,3 +94,4 @@ class Agent(object):
         self.rewards = []
         self.entropies = []
         return self
+

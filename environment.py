@@ -8,9 +8,9 @@ from cv2 import resize
 #from scipy.misc import imresize as resize
 
 
-def atari_env(env_id, env_conf):
+def atari_env(env_id, env_conf, args):
     env = gym.make(env_id)
-    env = EpisodicLifeEnv(env)
+    env = EpisodicLifeEnv(env, args)
     if 'FIRE' in env.unwrapped.get_action_meanings():
         env = FireResetEnv(env)
     env = AtariRescale(env, env_conf)
@@ -61,17 +61,21 @@ class NormalizedEnv(gym.ObservationWrapper):
 
 
 class EpisodicLifeEnv(gym.Wrapper):
-    def __init__(self, env):
+    def __init__(self, env, args):
         """Make end-of-life == end-of-episode, but only reset on true game over.
         Done by DeepMind for the DQN and co. since it helps value estimation.
         """
         gym.Wrapper.__init__(self, env)
         self.lives = 0
         self.was_real_done = True
+        self.maxtime = args.max_episode_length
+        self.num_steps = 0
 
     def _step(self, action):
+        self.num_steps += 1
         obs, reward, done, info = self.env.step(action)
-        self.was_real_done = done
+        self.was_real_done = done or self.num_steps >= self.maxtime
+        done = self.was_real_done
         # check current lives, make loss of life terminal,
         # then update lives to handle bonus lives
         lives = self.env.unwrapped.ale.lives()
@@ -90,6 +94,7 @@ class EpisodicLifeEnv(gym.Wrapper):
         """
         if self.was_real_done:
             obs = self.env.reset(**kwargs)
+            self.num_steps = 0
         else:
             # no-op step to advance from terminal/lost life state
             obs, _, _, _ = self.env.step(0)
@@ -113,3 +118,4 @@ class FireResetEnv(gym.Wrapper):
         if done:
             self.env.reset(**kwargs)
         return obs
+

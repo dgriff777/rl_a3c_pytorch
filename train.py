@@ -15,7 +15,7 @@ def train(rank, args, shared_model, optimizer, env_conf):
     torch.manual_seed(args.seed + rank)
     if gpu_id >= 0:
         torch.cuda.manual_seed(args.seed + rank)
-    env = atari_env(args.env, env_conf)
+    env = atari_env(args.env, env_conf, args)
     if optimizer is None:
         if args.optimizer == 'RMSprop':
             optimizer = optim.RMSprop(shared_model.parameters(), lr=args.lr)
@@ -58,25 +58,24 @@ def train(rank, args, shared_model, optimizer, env_conf):
                 with torch.cuda.device(gpu_id):
                     player.state = player.state.cuda()
 
-        if gpu_id >= 0:
-            with torch.cuda.device(gpu_id):
-                R = torch.zeros(1, 1).cuda()
-        else:
-            R = torch.zeros(1, 1)
+        R = torch.zeros(1, 1)
         if not player.done:
             value, _, _ = player.model(
                 (Variable(player.state.unsqueeze(0)), (player.hx, player.cx)))
             R = value.data
 
+        if gpu_id >= 0:
+            with torch.cuda.device(gpu_id):
+                R = R.cuda()
+
         player.values.append(Variable(R))
         policy_loss = 0
         value_loss = 0
-        R = Variable(R)
+        gae = torch.zeros(1, 1)
         if gpu_id >= 0:
             with torch.cuda.device(gpu_id):
-                gae = torch.zeros(1, 1).cuda()
-        else:
-            gae = torch.zeros(1, 1)
+                gae = gae.cuda()
+        R = Variable(R)
         for i in reversed(range(len(player.rewards))):
             R = args.gamma * R + player.rewards[i]
             advantage = R - player.values[i]
@@ -85,6 +84,7 @@ def train(rank, args, shared_model, optimizer, env_conf):
             # Generalized Advantage Estimataion
             delta_t = player.rewards[i] + args.gamma * \
                 player.values[i + 1].data - player.values[i].data
+
             gae = gae * args.gamma * args.tau + delta_t
 
             policy_loss = policy_loss - \
@@ -97,3 +97,4 @@ def train(rank, args, shared_model, optimizer, env_conf):
         ensure_shared_grads(player.model, shared_model, gpu=gpu_id >= 0)
         optimizer.step()
         player.clear_actions()
+

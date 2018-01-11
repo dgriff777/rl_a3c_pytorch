@@ -25,7 +25,7 @@ def test(args, shared_model, env_conf):
     torch.manual_seed(args.seed)
     if gpu_id >= 0:
         torch.cuda.manual_seed(args.seed)
-    env = atari_env(args.env, env_conf)
+    env = atari_env(args.env, env_conf, args)
     reward_sum = 0
     start_time = time.time()
     num_tests = 0
@@ -86,3 +86,4 @@ def test(args, shared_model, env_conf):
             if gpu_id >= 0:
                 with torch.cuda.device(gpu_id):
                     player.state = player.state.cuda()
+

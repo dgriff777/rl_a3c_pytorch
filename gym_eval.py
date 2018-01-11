@@ -78,7 +78,7 @@ d_args = vars(args)
 for k in d_args.keys():
     log['{}_mon_log'.format(args.env)].info('{0}: {1}'.format(k, d_args[k]))
 
-env = atari_env("{}".format(args.env), env_conf)
+env = atari_env("{}".format(args.env), env_conf, args)
 num_tests = 0
 reward_total_sum = 0
 player = Agent(None, env, args, None)

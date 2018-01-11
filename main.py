@@ -141,7 +141,7 @@ if __name__ == '__main__':
     for i in setup_json.keys():
         if i in args.env:
             env_conf = setup_json[i]
-    env = atari_env(args.env, env_conf)
+    env = atari_env(args.env, env_conf, args)
     shared_model = A3Clstm(env.observation_space.shape[0], env.action_space)
     if args.load:
         saved_state = torch.load('{0}{1}.dat'.format(
@@ -174,3 +174,4 @@ if __name__ == '__main__':
     for p in processes:
         time.sleep(0.1)
         p.join()
+
