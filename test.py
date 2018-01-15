@@ -36,13 +36,13 @@ def test(args, shared_model, env_conf):
         player.env.observation_space.shape[0], player.env.action_space)
 
     player.state = player.env.reset()
+    player.eps_len+=2
     player.state = torch.from_numpy(player.state).float()
     if gpu_id >= 0:
         with torch.cuda.device(gpu_id):
             player.model = player.model.cuda()
             player.state = player.state.cuda()
     player.model.eval()
-
     while True:
         if player.done:
             if gpu_id >= 0:
@@ -54,15 +54,15 @@ def test(args, shared_model, env_conf):
         player.action_test()
         reward_sum += player.reward
 
-        if player.done and player.info['ale.lives'] > 0:
+        if player.done and player.info['ale.lives'] > 0 and not player.max_length:   #ugly hack need to clean this up
             state = player.env.reset()
+            player.eps_len+=2
             player.state = torch.from_numpy(state).float()
             if gpu_id >= 0:
                 with torch.cuda.device(gpu_id):
                     player.state = player.state.cuda()
-        elif player.done:
+        elif player.done or player.max_length:
             num_tests += 1
-            player.current_life = 0
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
             log['{}_log'.format(args.env)].info(
@@ -81,7 +81,8 @@ def test(args, shared_model, env_conf):
             reward_sum = 0
             player.eps_len = 0
             state = player.env.reset()
-            time.sleep(60)
+            player.eps_len+=2
+            time.sleep(10)
             player.state = torch.from_numpy(state).float()
             if gpu_id >= 0:
                 with torch.cuda.device(gpu_id):

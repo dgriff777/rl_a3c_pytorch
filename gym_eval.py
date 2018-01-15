@@ -55,6 +55,17 @@ parser.add_argument(
     default=100000,
     metavar='M',
     help='maximum length of an episode (default: 100000)')
+parser.add_argument(
+    '--gpu-id',
+    type=int,
+    default=-1,
+    help='GPU to use [-1 CPU only] (default: -1)')
+parser.add_argument(
+    '--skip_rate',
+    type=int,
+    default=4,
+    metavar='SR',
+    help='frame skip rate (default: 4)')
 args = parser.parse_args()
 
 setup_json = read_config(args.env_config)
@@ -62,7 +73,12 @@ env_conf = setup_json["Default"]
 for i in setup_json.keys():
     if i in args.env:
         env_conf = setup_json[i]
-torch.set_default_tensor_type('torch.FloatTensor')
+
+gpu_id = args.gpu_id
+
+torch.manual_seed(args.seed)
+if gpu_id >= 0:
+    torch.cuda.manual_seed(args.seed)
 
 saved_state = torch.load(
     '{0}{1}.dat'.format(args.load_model_dir, args.env),
@@ -84,6 +100,11 @@ reward_total_sum = 0
 player = Agent(None, env, args, None)
 player.model = A3Clstm(player.env.observation_space.shape[0],
                        player.env.action_space)
+
+if gpu_id >= 0:
+    with torch.cuda.device(gpu_id):
+        player.model = player.model.cuda()
+
 player.env = gym.wrappers.Monitor(
     player.env, "{}_monitor".format(args.env), force=True)
 player.model.eval()
@@ -91,7 +112,10 @@ player.model.eval()
 for i_episode in range(args.num_episodes):
     player.state = player.env.reset()
     player.state = torch.from_numpy(player.state).float()
-    player.eps_len = 0
+    if gpu_id >= 0:
+        with torch.cuda.device(gpu_id):
+        player.state = player.state.cuda()
+    player.eps_len+=2
     reward_sum = 0
     while True:
         if args.render:
@@ -99,15 +123,23 @@ for i_episode in range(args.num_episodes):
                 player.env.render()
 
         if player.done:
-            player.model.load_state_dict(saved_state)
+            if gpu_id >= 0:
+                with torch.cuda.device(gpu_id):
+                    player.model.load_state_dict(shared_model.state_dict())
+            else:
+                player.model.load_state_dict(shared_model.state_dict())
 
         player.action_test()
         reward_sum += player.reward
 
-        if player.done and player.info['ale.lives'] > 0:
+        if player.done and player.info['ale.lives'] > 0 and not player.max_length:   #ugly hack need to clean this up
             state = player.env.reset()
+            player.eps_len+=2
             player.state = torch.from_numpy(state).float()
-        elif player.done:
+            if gpu_id >= 0:
+                with torch.cuda.device(gpu_id):
+                    player.state = player.state.cuda()
+        elif player.done or player.max_length:
             player.current_life = 0
             num_tests += 1
             reward_total_sum += reward_sum
@@ -115,5 +147,6 @@ for i_episode in range(args.num_episodes):
             log['{}_mon_log'.format(args.env)].info(
                 "reward sum: {0}, reward mean: {1:.4f}".format(
                     reward_sum, reward_mean))
+            player.eps_len=0
 
             break

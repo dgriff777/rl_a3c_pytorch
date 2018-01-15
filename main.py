@@ -120,6 +120,13 @@ parser.add_argument(
     default=True,
     metavar='AM',
     help='Adam optimizer amsgrad parameter')
+parser.add_argument(
+    '--skip_rate',
+    type=int,
+    default=4,
+    metavar='SR',
+    help='frame skip rate (default: 4)')
+
 
 
 # Based on

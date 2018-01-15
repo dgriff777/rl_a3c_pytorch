@@ -22,6 +22,8 @@ class Agent(object):
         self.info = None
         self.reward = 0
         self.gpu_id = -1
+        self.max_length = False
+
 
     def action_train(self):
         if self.done:
@@ -50,6 +52,14 @@ class Agent(object):
             with torch.cuda.device(self.gpu_id):
                 self.state = self.state.cuda()
         self.eps_len += 1
+        if self.eps_len >= self.args.max_episode_length:  #ugly hack need to clean this up
+           if not self.done:
+               self.max_length = True
+               self.done = True
+           else:
+               self.max_length = False
+        else:
+           self.max_length = False
         self.reward = max(min(self.reward, 1), -1)
         self.values.append(value)
         self.log_probs.append(log_prob)
@@ -80,6 +90,14 @@ class Agent(object):
             with torch.cuda.device(self.gpu_id):
                 self.state = self.state.cuda()
         self.eps_len += 1
+        if self.eps_len >= self.args.max_episode_length:  #ugly hack need to clean this up
+           if not self.done:
+               self.max_length = True
+               self.done = True 
+           else:
+               self.max_length = False
+        else:
+           self.max_length = False
         return self
 
     def check_state(self):
