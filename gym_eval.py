@@ -37,7 +37,17 @@ parser.add_argument(
     metavar='LMD',
     help='folder to load trained models from')
 parser.add_argument(
-    '--log-dir', default='logs/', metavar='LG', help='folder to save logs')
+    '--seed',
+    type=int,
+    default=1,
+    metavar='S',
+    help='random seed (default: 1)')
+parser.add_argument(
+parser.add_argument(
+    '--log-dir', 
+    default='logs/', 
+    metavar='LG', 
+    help='folder to save logs')
 parser.add_argument(
     '--render',
     default=False,
