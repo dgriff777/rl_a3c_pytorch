@@ -32,7 +32,7 @@
   "Pong": {
     "crop1": 34,
     "crop2": 34,
-    "dimension2": 80    
+    "dimension2": 80
   },
   "Seaquest": {
     "crop1": 30,
@@ -48,5 +48,16 @@
     "crop1": 42,
     "crop2": 60,
     "dimension2": 89
+  },
+  "Qbert": {
+    "crop1": 12,
+    "crop2": 40,
+    "dimension2": 94
+  },
+  "Boxing": {
+    "crop1": 30,
+    "crop2": 30,
+    "dimension2": 80
   }
 }
+

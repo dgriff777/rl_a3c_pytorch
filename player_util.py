@@ -24,7 +24,6 @@ class Agent(object):
         self.gpu_id = -1
         self.max_length = False
 
-
     def action_train(self):
         if self.done:
             if self.gpu_id >= 0:
@@ -52,14 +51,14 @@ class Agent(object):
             with torch.cuda.device(self.gpu_id):
                 self.state = self.state.cuda()
         self.eps_len += 1
-        if self.eps_len >= self.args.max_episode_length:  #ugly hack need to clean this up
-           if not self.done:
-               self.max_length = True
-               self.done = True
-           else:
-               self.max_length = False
+        if self.eps_len >= self.args.max_episode_length:
+            if not self.done:
+                self.max_length = True
+                self.done = True
+            else:
+                self.max_length = False
         else:
-           self.max_length = False
+            self.max_length = False
         self.reward = max(min(self.reward, 1), -1)
         self.values.append(value)
         self.log_probs.append(log_prob)
@@ -90,20 +89,14 @@ class Agent(object):
             with torch.cuda.device(self.gpu_id):
                 self.state = self.state.cuda()
         self.eps_len += 1
-        if self.eps_len >= self.args.max_episode_length:  #ugly hack need to clean this up
-           if not self.done:
-               self.max_length = True
-               self.done = True 
-           else:
-               self.max_length = False
+        if self.eps_len >= self.args.max_episode_length:
+            if not self.done:
+                self.max_length = True
+                self.done = True
+            else:
+                self.max_length = False
         else:
-           self.max_length = False
-        return self
-
-    def check_state(self):
-        if self.current_life > self.info['ale.lives']:
-            self.done = True
-        self.current_life = self.info['ale.lives']
+            self.max_length = False
         return self
 
     def clear_actions(self):

@@ -79,7 +79,7 @@ class NoopResetEnv(gym.Wrapper):
     def _reset(self):
         """ Do no-op action for a number of steps in [1, noop_max]."""
         self.env.reset()
-        noops = random.randrange(1, self.noop_max + 1) #pylint: disable=E1101
+        noops = random.randrange(1, self.noop_max + 1)  # pylint: disable=E1101
         assert noops > 0
         obs = None
         for _ in range(noops):
@@ -96,9 +96,14 @@ class FireResetEnv(gym.Wrapper):
 
     def _reset(self):
         self.env.reset()
-        obs, _, done, _ = self.env.step(0)
         obs, _, done, _ = self.env.step(1)
+        if done:
+            self.env.reset()
+        obs, _, done, _ = self.env.step(2)
+        if done:
+            self.env.reset()
         return obs
+
 
 class EpisodicLifeEnv(gym.Wrapper):
     def __init__(self, env):
@@ -107,7 +112,7 @@ class EpisodicLifeEnv(gym.Wrapper):
         """
         gym.Wrapper.__init__(self, env)
         self.lives = 0
-        self.was_real_done  = True
+        self.was_real_done = True
 
     def _step(self, action):
         obs, reward, done, info = self.env.step(action)
@@ -139,28 +144,31 @@ class EpisodicLifeEnv(gym.Wrapper):
         return obs
 
 
-
 class MaxAndSkipEnv(gym.Wrapper):
-    def __init__(self, env, skip=4):
+    def __init__(self, env=None, skip=4):
         """Return only every `skip`-th frame"""
         gym.Wrapper.__init__(self, env)
         # most recent raw observations (for max pooling across time steps)
-        self._obs_buffer = np.zeros((2,)+env.observation_space.shape, dtype='uint8')
+        self._obs_buffer = deque(maxlen=2)
         self._skip = skip
 
     def _step(self, action):
-        """Repeat action, sum reward, and max over last observations."""
         total_reward = 0.0
         done = None
-        for i in range(self._skip):
+        for _ in range(self._skip):
             obs, reward, done, info = self.env.step(action)
-            if i == self._skip - 2: self._obs_buffer[0] = obs
-            if i == self._skip - 1: self._obs_buffer[1] = obs
+            self._obs_buffer.append(obs)
             total_reward += reward
             if done:
                 break
-        # Note that the observation on the done=True frame
-        # doesn't matter
-        max_frame = self._obs_buffer.max(axis=0)
+
+        max_frame = np.max(np.stack(self._obs_buffer), axis=0)
         return max_frame, total_reward, done, info
+
+    def _reset(self):
+        """Clear past frame buffer and init. to first obs. from inner env."""
+        self._obs_buffer.clear()
+        obs = self.env.reset()
+        self._obs_buffer.append(obs)
+        return obs
 

@@ -36,32 +36,36 @@ def test(args, shared_model, env_conf):
         player.env.observation_space.shape[0], player.env.action_space)
 
     player.state = player.env.reset()
-    player.eps_len+=2
+    player.eps_len += 2
     player.state = torch.from_numpy(player.state).float()
     if gpu_id >= 0:
         with torch.cuda.device(gpu_id):
             player.model = player.model.cuda()
             player.state = player.state.cuda()
-    player.model.eval()
+    flag = True
+    max_score = 0
     while True:
-        if player.done:
+        if flag:
             if gpu_id >= 0:
                 with torch.cuda.device(gpu_id):
                     player.model.load_state_dict(shared_model.state_dict())
             else:
                 player.model.load_state_dict(shared_model.state_dict())
+            player.model.eval()
+            flag = False
 
         player.action_test()
         reward_sum += player.reward
 
-        if player.done and player.info['ale.lives'] > 0 and not player.max_length:   #ugly hack need to clean this up
+        if player.done and player.info['ale.lives'] > 0 and not player.max_length:
             state = player.env.reset()
-            player.eps_len+=2
+            player.eps_len += 2
             player.state = torch.from_numpy(state).float()
             if gpu_id >= 0:
                 with torch.cuda.device(gpu_id):
                     player.state = player.state.cuda()
         elif player.done or player.max_length:
+            flag = True
             num_tests += 1
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
@@ -72,8 +76,8 @@ def test(args, shared_model, env_conf):
                                   time.gmtime(time.time() - start_time)),
                     reward_sum, player.eps_len, reward_mean))
 
-            if reward_sum > args.save_score_level:
-                player.model.load_state_dict(shared_model.state_dict())
+            if args.save_max and reward_sum >= max_score:
+                max_score = reward_sum
                 state_to_save = player.model.state_dict()
                 torch.save(state_to_save, '{0}{1}.dat'.format(
                     args.save_model_dir, args.env))
@@ -81,7 +85,7 @@ def test(args, shared_model, env_conf):
             reward_sum = 0
             player.eps_len = 0
             state = player.env.reset()
-            player.eps_len+=2
+            player.eps_len += 2
             time.sleep(10)
             player.state = torch.from_numpy(state).float()
             if gpu_id >= 0:

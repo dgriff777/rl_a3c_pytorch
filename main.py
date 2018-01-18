@@ -13,8 +13,8 @@ from shared_optim import SharedRMSprop, SharedAdam
 from gym.configuration import undo_logger_setup
 import time
 
-undo_logger_setup()
 
+undo_logger_setup()
 parser = argparse.ArgumentParser(description='A3C')
 parser.add_argument(
     '--lr',
@@ -55,7 +55,7 @@ parser.add_argument(
 parser.add_argument(
     '--max-episode-length',
     type=int,
-    default=10000,
+    default=20000,
     metavar='M',
     help='maximum length of an episode (default: 10000)')
 parser.add_argument(
@@ -79,11 +79,10 @@ parser.add_argument(
     metavar='L',
     help='load a trained model')
 parser.add_argument(
-    '--save-score-level',
-    type=int,
-    default=20,
-    metavar='SSL',
-    help='reward score test evaluation must get higher than to save model')
+    '--save-max',
+    default=True,
+    metavar='SM',
+    help='Save model on every test run high score matched or bested')
 parser.add_argument(
     '--optimizer',
     default='Adam',
@@ -121,12 +120,11 @@ parser.add_argument(
     metavar='AM',
     help='Adam optimizer amsgrad parameter')
 parser.add_argument(
-    '--skip_rate',
+    '--skip-rate',
     type=int,
     default=4,
     metavar='SR',
     help='frame skip rate (default: 4)')
-
 
 
 # Based on
