@@ -92,7 +92,7 @@ python gym_eval.py --env Pong-v0 --num-episodes 100
 ![BeamRider Training](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Figure_2-1.png)
 ![Boxing training](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Figure_2-2.png)
 ![Pong Training](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Figure_2-3.png)
-
+![SpaceInvaders Training](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Figure_2-4.png)
 
 ## Project Reference
 
