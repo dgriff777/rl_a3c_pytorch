@@ -89,6 +89,7 @@ To run a 100 episode gym evaluation with trained model
 python gym_eval.py --env Pong-v0 --num-episodes 100
 ```
 *Notice BeamRiderNoFrameskip-v4 reaches scores over 50,000 in less than 3hrs of training compared to the gym v0 version this shows the difficulty of those versions but also the timelimit being a major factor in score level*
+
 *These training charts were done on a DGX Station using 4GPUs and 20core Cpu. I used 36 worker agents and a tau of 0.92 which is the lambda in Generalized Advantage Estimation equation to introduce more variance due to the more deterministic nature of using just a 4 frame skip environment and a 0-30 NoOp start*
 ![BeamRider Training](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Figure_2-1.png)
 ![Boxing training](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Figure_2-2.png)
