@@ -25,12 +25,6 @@ class Agent(object):
         self.max_length = False
 
     def action_train(self):
-        if self.done:
-            if self.gpu_id >= 0:
-                with torch.cuda.device(self.gpu_id):
-                    self.cx = Variable(torch.zeros(1, 512).cuda())
-                    self.hx = Variable(torch.zeros(1, 512).cuda())
-
         value, logit, (self.hx, self.cx) = self.model(
             (Variable(self.state.unsqueeze(0)), (self.hx, self.cx)))
         prob = F.softmax(logit, dim=1)
