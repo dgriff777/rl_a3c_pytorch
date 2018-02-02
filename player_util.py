@@ -30,12 +30,7 @@ class Agent(object):
                 with torch.cuda.device(self.gpu_id):
                     self.cx = Variable(torch.zeros(1, 512).cuda())
                     self.hx = Variable(torch.zeros(1, 512).cuda())
-            else:
-                self.cx = Variable(torch.zeros(1, 512))
-                self.hx = Variable(torch.zeros(1, 512))
-        else:
-            self.cx = Variable(self.cx.data)
-            self.hx = Variable(self.hx.data)
+
         value, logit, (self.hx, self.cx) = self.model(
             (Variable(self.state.unsqueeze(0)), (self.hx, self.cx)))
         prob = F.softmax(logit, dim=1)
