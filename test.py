@@ -82,6 +82,9 @@ def test(args, shared_model, env_conf):
                     with torch.cuda.device(gpu_id):
                         state_to_save = player.model.state_dict()
                         torch.save(state_to_save, '{0}{1}.dat'.format(args.save_model_dir, args.env))
+                else:
+                    state_to_save = player.model.state_dict()
+                    torch.save(state_to_save, '{0}{1}.dat'.format(args.save_model_dir, args.env))
 
             reward_sum = 0
             player.eps_len = 0
