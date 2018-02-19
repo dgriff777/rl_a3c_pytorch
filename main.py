@@ -10,11 +10,11 @@ from model import A3Clstm
 from train import train
 from test import test
 from shared_optim import SharedRMSprop, SharedAdam
-from gym.configuration import undo_logger_setup
+#from gym.configuration import undo_logger_setup
 import time
 
 
-undo_logger_setup()
+#undo_logger_setup()
 parser = argparse.ArgumentParser(description='A3C')
 parser.add_argument(
     '--lr',
