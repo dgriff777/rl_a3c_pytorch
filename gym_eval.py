@@ -9,10 +9,10 @@ from model import A3Clstm
 from player_util import Agent
 import gym
 import logging
-from gym.configuration import undo_logger_setup
+#from gym.configuration import undo_logger_setup
 
 
-undo_logger_setup()
+#undo_logger_setup()
 parser = argparse.ArgumentParser(description='A3C_EVAL')
 parser.add_argument(
     '--env',
