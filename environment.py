@@ -24,7 +24,7 @@ def atari_env(env_id, env_conf, args):
     return env
 
 
-def _process_frame(frame, conf):
+def process_frame(frame, conf):
     frame = frame[conf["crop1"]:conf["crop2"] + 160, :160]
     frame = frame.mean(2)
     frame = frame.astype(np.float32)
@@ -38,11 +38,11 @@ def _process_frame(frame, conf):
 class AtariRescale(gym.ObservationWrapper):
     def __init__(self, env, env_conf):
         gym.ObservationWrapper.__init__(self, env)
-        self.observation_space = Box(0.0, 1.0, [1, 80, 80])
+        self.observation_space = Box(0.0, 1.0, [1, 80, 80], dtype=np.uint8)
         self.conf = env_conf
 
-    def _observation(self, observation):
-        return _process_frame(observation, self.conf)
+    def observation(self, observation):
+        return process_frame(observation, self.conf)
 
 
 class NormalizedEnv(gym.ObservationWrapper):
@@ -53,7 +53,7 @@ class NormalizedEnv(gym.ObservationWrapper):
         self.alpha = 0.9999
         self.num_steps = 0
 
-    def _observation(self, observation):
+    def observation(self, observation):
         self.num_steps += 1
         self.state_mean = self.state_mean * self.alpha + \
             observation.mean() * (1 - self.alpha)
@@ -76,7 +76,7 @@ class NoopResetEnv(gym.Wrapper):
         self.noop_action = 0
         assert env.unwrapped.get_action_meanings()[0] == 'NOOP'
 
-    def _reset(self):
+    def reset(self):
         """ Do no-op action for a number of steps in [1, noop_max]."""
         self.env.reset()
         noops = random.randrange(1, self.noop_max + 1)  # pylint: disable=E1101
@@ -86,6 +86,9 @@ class NoopResetEnv(gym.Wrapper):
             obs, _, done, _ = self.env.step(self.noop_action)
         return obs
 
+    def step(self, ac):
+        return self.env.step(ac)
+
 
 class FireResetEnv(gym.Wrapper):
     def __init__(self, env):
@@ -94,7 +97,7 @@ class FireResetEnv(gym.Wrapper):
         assert env.unwrapped.get_action_meanings()[1] == 'FIRE'
         assert len(env.unwrapped.get_action_meanings()) >= 3
 
-    def _reset(self):
+    def reset(self):
         self.env.reset()
         obs, _, done, _ = self.env.step(1)
         if done:
@@ -103,6 +106,9 @@ class FireResetEnv(gym.Wrapper):
         if done:
             self.env.reset()
         return obs
+
+    def step(self, ac):
+        return self.env.step(ac)
 
 
 class EpisodicLifeEnv(gym.Wrapper):
@@ -114,7 +120,7 @@ class EpisodicLifeEnv(gym.Wrapper):
         self.lives = 0
         self.was_real_done = True
 
-    def _step(self, action):
+    def step(self, action):
         obs, reward, done, info = self.env.step(action)
         self.was_real_done = True
         # check current lives, make loss of life terminal,
@@ -129,7 +135,7 @@ class EpisodicLifeEnv(gym.Wrapper):
         self.lives = lives
         return obs, reward, done, info
 
-    def _reset(self):
+    def reset(self):
         """Reset only when lives are exhausted.
         This way all states are still reachable even though lives are episodic,
         and the learner need not know about any of this behind-the-scenes.
@@ -152,7 +158,7 @@ class MaxAndSkipEnv(gym.Wrapper):
         self._obs_buffer = deque(maxlen=2)
         self._skip = skip
 
-    def _step(self, action):
+    def step(self, action):
         total_reward = 0.0
         done = None
         for _ in range(self._skip):
@@ -165,10 +171,9 @@ class MaxAndSkipEnv(gym.Wrapper):
         max_frame = np.max(np.stack(self._obs_buffer), axis=0)
         return max_frame, total_reward, done, info
 
-    def _reset(self):
+    def reset(self):
         """Clear past frame buffer and init. to first obs. from inner env."""
         self._obs_buffer.clear()
         obs = self.env.reset()
         self._obs_buffer.append(obs)
         return obs
-
