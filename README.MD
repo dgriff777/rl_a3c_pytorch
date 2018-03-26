@@ -53,7 +53,9 @@ link to the Gym environment evaluations below
 [9]: https://gym.openai.com/evaluations/eval_8Wwndzd8R62np8CxVQWEeg#reproducibility
 [10]: https://gym.openai.com/evaluations/eval_uxYSMnhuTpCNLoPZ7DkxKQ
 
-*The 167,330 Space Invaders score is World Record Space Invaders score and game ended only due to GYM timestep limit and not from loss of life*
+**The 167,330 Space Invaders score is World Record Space Invaders score and game ended only due to GYM timestep limit and not from loss of life**
+
+**Due to gym version Seaquest-v0 timestep limit agent scores lower but on Seaquest-v4 with higher timestep limit agent beats game (see gif above) with max possible score 999,999!!**
 
 ## Requirements
 
