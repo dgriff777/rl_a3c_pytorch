@@ -37,7 +37,7 @@ def ensure_shared_grads(model, shared_model, gpu=False):
         if not gpu:
             shared_param._grad = param.grad
         else:
-            shared_param._grad = param.grad.clone().cpu()
+            shared_param._grad = param.grad.cpu()
 
 
 def weights_init(m):
