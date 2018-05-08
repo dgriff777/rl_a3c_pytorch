@@ -64,7 +64,7 @@ link to the Gym environment evaluations below
 - Pytorch
 
 ## Training
-*When training model it is important to limit number of worker threads to number of cpu cores available as too many threads (e.g. more than one thread per cpu core available) will actually be detrimental in training speed and effectiveness*
+*When training model it is important to limit number of worker processes to number of cpu cores available as too many processes (e.g. more than one thread per cpu core available) will actually be detrimental in training speed and effectiveness*
 
 To train agent in Pong-v0 environment with 32 different worker threads:
 
