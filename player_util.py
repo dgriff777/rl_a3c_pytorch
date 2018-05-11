@@ -8,7 +8,6 @@ class Agent(object):
     def __init__(self, model, env, args, state):
         self.model = model
         self.env = env
-        self.current_life = 0
         self.state = state
         self.hx = None
         self.cx = None
@@ -22,7 +21,6 @@ class Agent(object):
         self.info = None
         self.reward = 0
         self.gpu_id = -1
-        self.max_length = False
 
     def action_train(self):
         value, logit, (self.hx, self.cx) = self.model(
@@ -39,15 +37,6 @@ class Agent(object):
         if self.gpu_id >= 0:
             with torch.cuda.device(self.gpu_id):
                 self.state = self.state.cuda()
-        self.eps_len += 1
-        if self.eps_len >= self.args.max_episode_length:
-            if not self.done:
-                self.max_length = True
-                self.done = True
-            else:
-                self.max_length = False
-        else:
-            self.max_length = False
         self.reward = max(min(self.reward, 1), -1)
         self.values.append(value)
         self.log_probs.append(log_prob)
@@ -78,14 +67,6 @@ class Agent(object):
             with torch.cuda.device(self.gpu_id):
                 self.state = self.state.cuda()
         self.eps_len += 1
-        if self.eps_len >= self.args.max_episode_length:
-            if not self.done:
-                self.max_length = True
-                self.done = True
-            else:
-                self.max_length = False
-        else:
-            self.max_length = False
         return self
 
     def clear_actions(self):
