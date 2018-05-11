@@ -157,7 +157,7 @@ for i_episode in range(args.num_episodes):
             num_tests += 1
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
-            log['{}_log'.format(args.env)].info(
+            log['{}_mon_log'.format(args.env)].info(
                 "Time {0}, episode reward {1}, episode length {2}, reward mean {3:.4f}".
                 format(
                     time.strftime("%Hh %Mm %Ss",
