@@ -61,10 +61,7 @@ def train(rank, args, shared_model, optimizer, env_conf):
                 break
 
         if player.done:
-            if player.info['ale.lives'] == 0 or player.max_length:
-                player.eps_len = 0
             state = player.env.reset()
-            player.eps_len += 2
             player.state = torch.from_numpy(state).float()
             if gpu_id >= 0:
                 with torch.cuda.device(gpu_id):
@@ -109,4 +106,3 @@ def train(rank, args, shared_model, optimizer, env_conf):
         ensure_shared_grads(player.model, shared_model, gpu=gpu_id >= 0)
         optimizer.step()
         player.clear_actions()
-
