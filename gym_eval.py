@@ -9,6 +9,7 @@ from model import A3Clstm
 from player_util import Agent
 import gym
 import logging
+import time
 #from gym.configuration import undo_logger_setup
 
 
@@ -54,7 +55,7 @@ parser.add_argument(
 parser.add_argument(
     '--max-episode-length',
     type=int,
-    default=20000,
+    default=10000,
     metavar='M',
     help='maximum length of an episode (default: 100000)')
 parser.add_argument(
@@ -109,6 +110,7 @@ for k in d_args.keys():
 
 env = atari_env("{}".format(args.env), env_conf, args)
 num_tests = 0
+start_time = time.time()
 reward_total_sum = 0
 player = Agent(None, env, args, None)
 player.model = A3Clstm(player.env.observation_space.shape[0],
@@ -144,21 +146,23 @@ for i_episode in range(args.num_episodes):
         player.action_test()
         reward_sum += player.reward
 
-        # ugly hack need to clean this up
-        if player.done and player.info['ale.lives'] > 0 and not player.max_length:
+        if player.done and not player.info:
             state = player.env.reset()
             player.eps_len += 2
             player.state = torch.from_numpy(state).float()
             if gpu_id >= 0:
                 with torch.cuda.device(gpu_id):
                     player.state = player.state.cuda()
-        elif player.done or player.max_length:
+        elif player.info:
             num_tests += 1
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
-            log['{}_mon_log'.format(args.env)].info(
-                "reward sum: {0}, reward mean: {1:.4f}".format(
-                    reward_sum, reward_mean))
+            log['{}_log'.format(args.env)].info(
+                "Time {0}, episode reward {1}, episode length {2}, reward mean {3:.4f}".
+                format(
+                    time.strftime("%Hh %Mm %Ss",
+                                  time.gmtime(time.time() - start_time)),
+                    reward_sum, player.eps_len, reward_mean))
             player.eps_len = 0
             break
 
