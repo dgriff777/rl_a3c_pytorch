@@ -89,11 +89,6 @@ parser.add_argument(
     metavar='OPT',
     help='shares optimizer choice of Adam or RMSprop')
 parser.add_argument(
-    '--count-lives',
-    default=False,
-    metavar='CL',
-    help='end of life is end of training episode.')
-parser.add_argument(
     '--load-model-dir',
     default='trained_models/',
     metavar='LMD',
@@ -179,4 +174,3 @@ if __name__ == '__main__':
     for p in processes:
         time.sleep(0.1)
         p.join()
-
