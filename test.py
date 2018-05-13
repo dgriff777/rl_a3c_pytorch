@@ -14,10 +14,10 @@ def test(args, shared_model, env_conf):
     ptitle('Test Agent')
     gpu_id = args.gpu_ids[-1]
     log = {}
-    setup_logger('{}_log'.format(args.env),
-                 r'{0}{1}_log'.format(args.log_dir, args.env))
-    log['{}_log'.format(args.env)] = logging.getLogger(
-        '{}_log'.format(args.env))
+    setup_logger('{}_log'.format(args.env), r'{0}{1}_log'.format(
+        args.log_dir, args.env))
+    log['{}_log'.format(args.env)] = logging.getLogger('{}_log'.format(
+        args.env))
     d_args = vars(args)
     for k in d_args.keys():
         log['{}_log'.format(args.env)].info('{0}: {1}'.format(k, d_args[k]))
@@ -32,8 +32,8 @@ def test(args, shared_model, env_conf):
     reward_total_sum = 0
     player = Agent(None, env, args, None)
     player.gpu_id = gpu_id
-    player.model = A3Clstm(
-        player.env.observation_space.shape[0], player.env.action_space)
+    player.model = A3Clstm(player.env.observation_space.shape[0],
+                           player.env.action_space)
 
     player.state = player.env.reset()
     player.eps_len += 2
@@ -81,10 +81,12 @@ def test(args, shared_model, env_conf):
                 if gpu_id >= 0:
                     with torch.cuda.device(gpu_id):
                         state_to_save = player.model.state_dict()
-                        torch.save(state_to_save, '{0}{1}.dat'.format(args.save_model_dir, args.env))
+                        torch.save(state_to_save, '{0}{1}.dat'.format(
+                            args.save_model_dir, args.env))
                 else:
                     state_to_save = player.model.state_dict()
-                    torch.save(state_to_save, '{0}{1}.dat'.format(args.save_model_dir, args.env))
+                    torch.save(state_to_save, '{0}{1}.dat'.format(
+                        args.save_model_dir, args.env))
 
             reward_sum = 0
             player.eps_len = 0

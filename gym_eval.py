@@ -12,7 +12,6 @@ import logging
 import time
 #from gym.configuration import undo_logger_setup
 
-
 #undo_logger_setup()
 parser = argparse.ArgumentParser(description='A3C_EVAL')
 parser.add_argument(
@@ -37,10 +36,7 @@ parser.add_argument(
     metavar='LMD',
     help='folder to load trained models from')
 parser.add_argument(
-    '--log-dir',
-    default='logs/',
-    metavar='LG',
-    help='folder to save logs')
+    '--log-dir', default='logs/', metavar='LG', help='folder to save logs')
 parser.add_argument(
     '--render',
     default=False,
@@ -101,8 +97,8 @@ saved_state = torch.load(
 log = {}
 setup_logger('{}_mon_log'.format(args.env), r'{0}{1}_mon_log'.format(
     args.log_dir, args.env))
-log['{}_mon_log'.format(args.env)] = logging.getLogger(
-    '{}_mon_log'.format(args.env))
+log['{}_mon_log'.format(args.env)] = logging.getLogger('{}_mon_log'.format(
+    args.env))
 
 d_args = vars(args)
 for k in d_args.keys():
@@ -165,4 +161,3 @@ for i_episode in range(args.num_episodes):
                     reward_sum, player.eps_len, reward_mean))
             player.eps_len = 0
             break
-

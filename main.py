@@ -13,7 +13,6 @@ from shared_optim import SharedRMSprop, SharedAdam
 #from gym.configuration import undo_logger_setup
 import time
 
-
 #undo_logger_setup()
 parser = argparse.ArgumentParser(description='A3C')
 parser.add_argument(
@@ -74,10 +73,7 @@ parser.add_argument(
     metavar='SO',
     help='use an optimizer without shared statistics.')
 parser.add_argument(
-    '--load',
-    default=False,
-    metavar='L',
-    help='load a trained model')
+    '--load', default=False, metavar='L', help='load a trained model')
 parser.add_argument(
     '--save-max',
     default=True,
@@ -99,10 +95,7 @@ parser.add_argument(
     metavar='SMD',
     help='folder to save trained models')
 parser.add_argument(
-    '--log-dir',
-    default='logs/',
-    metavar='LG',
-    help='folder to save logs')
+    '--log-dir', default='logs/', metavar='LG', help='folder to save logs')
 parser.add_argument(
     '--gpu-ids',
     type=int,
@@ -120,7 +113,6 @@ parser.add_argument(
     default=4,
     metavar='SR',
     help='frame skip rate (default: 4)')
-
 
 # Based on
 # https://github.com/pytorch/examples/tree/master/mnist_hogwild
@@ -144,8 +136,9 @@ if __name__ == '__main__':
     env = atari_env(args.env, env_conf, args)
     shared_model = A3Clstm(env.observation_space.shape[0], env.action_space)
     if args.load:
-        saved_state = torch.load('{0}{1}.dat'.format(
-            args.load_model_dir, args.env), map_location=lambda storage, loc: storage)
+        saved_state = torch.load(
+            '{0}{1}.dat'.format(args.load_model_dir, args.env),
+            map_location=lambda storage, loc: storage)
         shared_model.load_state_dict(saved_state)
     shared_model.share_memory()
 
@@ -166,8 +159,8 @@ if __name__ == '__main__':
     processes.append(p)
     time.sleep(0.1)
     for rank in range(0, args.workers):
-        p = mp.Process(target=train, args=(
-            rank, args, shared_model, optimizer, env_conf))
+        p = mp.Process(
+            target=train, args=(rank, args, shared_model, optimizer, env_conf))
         p.start()
         processes.append(p)
         time.sleep(0.1)

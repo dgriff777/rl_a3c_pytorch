@@ -17,8 +17,13 @@ class SharedRMSprop(optim.Optimizer):
                  weight_decay=0,
                  momentum=0,
                  centered=False):
-        defaults = defaultdict(lr=lr, alpha=alpha, eps=eps,
-                               weight_decay=weight_decay, momentum=momentum, centered=centered)
+        defaults = defaultdict(
+            lr=lr,
+            alpha=alpha,
+            eps=eps,
+            weight_decay=weight_decay,
+            momentum=momentum,
+            centered=centered)
         super(SharedRMSprop, self).__init__(params, defaults)
 
         for group in self.param_groups:
@@ -27,8 +32,8 @@ class SharedRMSprop(optim.Optimizer):
                 state['step'] = torch.zeros(1)
                 state['grad_avg'] = p.data.new().resize_as_(p.data).zero_()
                 state['square_avg'] = p.data.new().resize_as_(p.data).zero_()
-                state['momentum_buffer'] = p.data.new(
-                ).resize_as_(p.data).zero_()
+                state['momentum_buffer'] = p.data.new().resize_as_(
+                    p.data).zero_()
 
     def share_memory(self):
         for group in self.param_groups:
@@ -72,8 +77,9 @@ class SharedRMSprop(optim.Optimizer):
                 if group['centered']:
                     grad_avg = state['grad_avg']
                     grad_avg.mul_(alpha).add_(1 - alpha, grad)
-                    avg = square_avg.addcmul(
-                        -1, grad_avg, grad_avg).sqrt().add_(group['eps'])
+                    avg = square_avg.addcmul(-1, grad_avg,
+                                             grad_avg).sqrt().add_(
+                                                 group['eps'])
                 else:
                     avg = square_avg.sqrt().add_(group['eps'])
 
@@ -98,8 +104,12 @@ class SharedAdam(optim.Optimizer):
                  eps=1e-3,
                  weight_decay=0,
                  amsgrad=False):
-        defaults = defaultdict(lr=lr, betas=betas, eps=eps,
-                               weight_decay=weight_decay, amsgrad=amsgrad)
+        defaults = defaultdict(
+            lr=lr,
+            betas=betas,
+            eps=eps,
+            weight_decay=weight_decay,
+            amsgrad=amsgrad)
         super(SharedAdam, self).__init__(params, defaults)
 
         for group in self.param_groups:
@@ -108,8 +118,8 @@ class SharedAdam(optim.Optimizer):
                 state['step'] = torch.zeros(1)
                 state['exp_avg'] = p.data.new().resize_as_(p.data).zero_()
                 state['exp_avg_sq'] = p.data.new().resize_as_(p.data).zero_()
-                state['max_exp_avg_sq'] = p.data.new(
-                ).resize_as_(p.data).zero_()
+                state['max_exp_avg_sq'] = p.data.new().resize_as_(
+                    p.data).zero_()
 
     def share_memory(self):
         for group in self.param_groups:
@@ -137,7 +147,8 @@ class SharedAdam(optim.Optimizer):
                 grad = p.grad.data
                 if grad.is_sparse:
                     raise RuntimeError(
-                        'Adam does not support sparse gradients, please consider SparseAdam instead')
+                        'Adam does not support sparse gradients, please consider SparseAdam instead'
+                    )
                 amsgrad = group['amsgrad']
 
                 state = self.state[p]
@@ -173,4 +184,3 @@ class SharedAdam(optim.Optimizer):
                 p.data.addcdiv_(-step_size, exp_avg, denom)
 
         return loss
-

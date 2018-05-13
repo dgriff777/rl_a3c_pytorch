@@ -25,8 +25,8 @@ def train(rank, args, shared_model, optimizer, env_conf):
     env.seed(args.seed + rank)
     player = Agent(None, env, args, None)
     player.gpu_id = gpu_id
-    player.model = A3Clstm(
-        player.env.observation_space.shape[0], player.env.action_space)
+    player.model = A3Clstm(player.env.observation_space.shape[0],
+                           player.env.action_space)
 
     player.state = player.env.reset()
     player.state = torch.from_numpy(player.state).float()
@@ -54,7 +54,6 @@ def train(rank, args, shared_model, optimizer, env_conf):
             player.cx = Variable(player.cx.data)
             player.hx = Variable(player.hx.data)
 
-
         for step in range(args.num_steps):
             player.action_train()
             if player.done:
@@ -69,8 +68,8 @@ def train(rank, args, shared_model, optimizer, env_conf):
 
         R = torch.zeros(1, 1)
         if not player.done:
-            value, _, _ = player.model(
-                (Variable(player.state.unsqueeze(0)), (player.hx, player.cx)))
+            value, _, _ = player.model((Variable(player.state.unsqueeze(0)),
+                                        (player.hx, player.cx)))
             R = value.data
 
         if gpu_id >= 0:
