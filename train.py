@@ -101,7 +101,6 @@ def train(rank, args, shared_model, optimizer, env_conf):
 
         player.model.zero_grad()
         (policy_loss + 0.5 * value_loss).backward()
-        torch.nn.utils.clip_grad_norm(player.model.parameters(), 100.0)
         ensure_shared_grads(player.model, shared_model, gpu=gpu_id >= 0)
         optimizer.step()
         player.clear_actions()
