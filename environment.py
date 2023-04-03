@@ -4,7 +4,7 @@ import numpy as np
 from collections import deque
 from gym.spaces.box import Box
 #from skimage.color import rgb2gray
-from cv2 import resize
+from cv2 import resize, INTER_AREA
 #from skimage.transform import resize
 #from scipy.misc import imresize as resize
 import random
@@ -30,12 +30,13 @@ def atari_env(env_id, env_conf, args):
 
 def process_frame(frame, conf):
     frame = frame[conf["crop1"]:conf["crop2"] + 160, :160]
-    frame = frame.mean(2)
-    frame = frame.astype(np.float32)
-    frame *= (1.0 / 255.0)
-    frame = resize(frame, (80, conf["dimension2"]))
-    frame = resize(frame, (80, 80))
-    frame = np.reshape(frame, [1, 80, 80])
+#    frame = frame.mean(2)
+#    frame = frame.astype(np.float32)
+#    frame *= (1.0 / 255.0)
+#    frame = resize(frame, (80, conf["dimension2"]), interpolation=INTER_AREA)
+    frame = resize(frame, (80, 80), interpolation=INTER_AREA)
+    frame = (0.2989 * frame[:,:,0] + 0.587 * frame[:,:,1] + 0.114 * frame[:,:,2])
+    frame = np.reshape(frame, [1, 80, 80]).astype(np.float32)
     return frame
 
 
@@ -64,8 +65,8 @@ class NormalizedEnv(gym.ObservationWrapper):
         self.state_std = self.state_std * self.alpha + \
             observation.std() * (1 - self.alpha)
 
-        unbiased_mean = self.state_mean / (1 - pow(self.alpha, self.num_steps))
-        unbiased_std = self.state_std / (1 - pow(self.alpha, self.num_steps))
+        unbiased_mean = self.state_mean / (1 - (self.alpha**self.num_steps))
+        unbiased_std = self.state_std / (1 - (self.alpha**self.num_steps))
 
         return (observation - unbiased_mean) / (unbiased_std + 1e-8)
 
@@ -142,7 +143,7 @@ class EpisodicLifeEnv(gym.Wrapper):
             # the environment advertises done.
             done = True
         self.lives = lives
-        return obs, reward, done, self.was_real_done
+        return obs, reward, done, info
 
     def reset(self, **kwargs):
         """Reset only when lives are exhausted.

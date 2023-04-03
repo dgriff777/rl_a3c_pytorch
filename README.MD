@@ -1,7 +1,7 @@
 
-[23]: https://github.com/dgriff777/a3c_continuous
+*Update: Minor updates to code. Added distributed step size training functionality. Added integration to tensorboard so you can can log and create graphs of training, see graph of model, and visualize your weights and biases distributions as they update during training.
 
-## NEWLY ADDED A3G A NEW GPU/CPU ARCHITECTURE OF A3C FOR SUBSTANTIALLY ACCELERATED TRAINING!!
+# A3G A GPU/CPU ARCHITECTURE OF A3C FOR SUBSTANTIALLY ACCELERATED TRAINING
 
 
 # RL A3C Pytorch
@@ -9,12 +9,12 @@
 ![A3C LSTM playing Breakout-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Breakout.gif) ![A3C LSTM playing SpaceInvadersDeterministic-v3](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/SpaceInvaders.gif) ![A3C LSTM playing MsPacman-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/MsPacman.gif) ![A3C LSTM\
  playing BeamRider-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/BeamRider.gif) ![A3C LSTM playing Seaquest-v0](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Seaquest.gif)
 
-# NEWLY ADDED A3G!!
-New implementation of A3C that utilizes GPU for speed increase in training. Which we can call **A3G**. A3G as opposed to other versions that try to utilize GPU with A3C algorithm, with A3G each agent has its own network maintained on GPU but shared model is on CPU and agent models are quickly converted to CPU to update shared model which allows updates to be frequent and fast by utilizing Hogwild Training and make updates to shared model asynchronously and without locks. This new method greatly increase training speed and models that use to take days to train can be trained in as fast as 10minutes for some Atari games! 10-15minutes for Breakout to start to score over 400! And 10mins to solve Pong!
+# A3G
+Implementation of A3C that utilizes GPU for speed increase in training. Which we can call **A3G**. A3G as opposed to other versions that try to utilize GPU with A3C algorithm, with A3G each agent has its own network maintained on GPU but shared model is on CPU and agent models are quickly converted to CPU to update shared model which allows updates to be frequent and fast by utilizing Hogwild Training and make updates to shared model asynchronously and without locks. This new method greatly increase training speed and models that use to take days to train can be trained in as fast as 10minutes for some Atari games! 10-15minutes for Breakout to start to score over 400! And 10mins to solve Pong!
 
 This repository includes my implementation with reinforcement learning using Asynchronous Advantage Actor-Critic (A3C) in Pytorch an algorithm from Google Deep Mind's paper "Asynchronous Methods for Deep Reinforcement Learning."
 
-*See [a3c_continuous][23] a newly added repo of my A3C LSTM implementation for continuous action spaces which was able to solve BipedWalkerHardcore-v2 environment (average 300+ for 100 consecutive episodes)*
+*See [a3c_continuous][23] a newly added repo of my A3C LSTM implementation for continuous action spaces which was able to solve BipedWalkerHardcore-v3 environment (average 300+ for 100 consecutive episodes)*
 
 
 ### A3C LSTM
@@ -61,23 +61,23 @@ link to the Gym environment evaluations below
 
 - Python 2.7+
 - Openai Gym and Universe
-- Pytorch
+- Pytorch (Pytorch 2.0 has a bug where it incorrectly occupies GPU memory on all GPUs being used when backward() is called on training processes. This does not slow down training but it does unnecesarily take up a lot of gpu memory. If this is problem for you and running out of gpu memory downgrade pytorch)
 
 ## Training
 *When training model it is important to limit number of worker processes to number of cpu cores available as too many processes (e.g. more than one process per cpu core available) will actually be detrimental in training speed and effectiveness*
 
-To train agent in Pong-v0 environment with 32 different worker processes:
+To train agent in PongNoFrameskip-v4 environment with 32 different worker processes:
 
 ```
-python main.py --env Pong-v0 --workers 32
+python main.py --env PongNoFrameskip-v4 --workers 32
 ```
-#A3C-GPU
-*training using machine with 4 V100 GPUs and 20core CPU for PongDeterministic-v4 took 10 minutes to converge*
+#A3G-Training
+*training using machine with 4 V100 GPUs and 20core CPU for PongNoFrameskip-v4 took 10 minutes to converge*
 
-To train agent in PongDeterministic-v4 environment with 32 different worker processes on 4 GPUs with new A3G:
+To train agent in PongNoFrameskip-v4 environment with 32 different worker processes on 4 GPUs with new A3G:
 
 ```
-python main.py --env PongDeterministic-v4 --workers 32 --gpu-ids 0 1 2 3 --amsgrad True
+python main.py --env PongNoFrameskip-v4 --workers 32 --gpu-ids 0 1 2 3 --amsgrad
 ```
 
 
@@ -88,8 +88,18 @@ Hit Ctrl C to end training session properly
 ## Evaluation
 To run a 100 episode gym evaluation with trained model
 ```
-python gym_eval.py --env Pong-v0 --num-episodes 100
+python gym_eval.py --env PongNoFrameskip-v4 --num-episodes 100 --new-gym-eval
 ```
+
+## Distributed Step Size training
+Example of use to train an agent using different step sizes across training processes from provided list of step sizes
+```
+python main.py --env PongNoFrameskip-v4 --workers 18 --gpu-ids 0 1 2 --amsgrad --distributed-step-size 16 32 64 --tau 0.92
+```
+Below a graph showing of running the distributed step size training command above
+![PongNoFrameskip DSS Training](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Pong_dss_training.png)
+
+
 *Notice BeamRiderNoFrameskip-v4 reaches scores over 50,000 in less than 2hrs of training compared to the gym v0 version this shows the difficulty of those versions but also the timelimit being a major factor in score level*
 
 *These training charts were done on a DGX Station using 4GPUs and 20core Cpu. I used 36 worker agents and a tau of 0.92 which is the lambda in Generalized Advantage Estimation equation to introduce more variance due to the more deterministic nature of using just a 4 frame skip environment and a 0-30 NoOp start*
