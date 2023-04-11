@@ -94,7 +94,7 @@ python gym_eval.py --env PongNoFrameskip-v4 --num-episodes 100 --new-gym-eval
 ## Distributed Step Size training
 Example of use to train an agent using different step sizes across training processes from provided list of step sizes
 ```
-python main.py --env PongNoFrameskip-v4 --workers 18 --gpu-ids 0 1 2 --amsgrad --distributed-step-size 16 32 64 --tau 0.92
+python main.py --env PongNoFrameskip-v4 --workers 18 --gpu-ids 0 1 2 --amsgrad --distributed-step-size 16 32 64 --tau 0.92 --tensorboard-logger
 ```
 Below a graph showing of running the distributed step size training command above
 ![PongNoFrameskip DSS Training](https://github.com/dgriff777/rl_a3c_pytorch/blob/master/demo/Pong_dss_training.png)
