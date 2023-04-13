@@ -16,8 +16,8 @@ class A3Clstm(torch.nn.Module):
 
         self.lstm = nn.LSTMCell(1024, self.hidden_size)
         num_outputs = action_space.n
-        self.critic_linear = nn.Linear(512, 1)
-        self.actor_linear = nn.Linear(512, num_outputs)
+        self.critic_linear = nn.Linear(self.hidden_size, 1)
+        self.actor_linear = nn.Linear(self.hidden_size, num_outputs)
 
         relu_gain = nn.init.calculate_gain("relu")
         self.conv1.weight.data.mul_(relu_gain)
