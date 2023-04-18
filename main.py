@@ -133,7 +133,7 @@ parser.add_argument(
     "-tl",
     "--tensorboard-logger",
     action="store_true",
-    help="Creates tensorboard logger to monitor value and policy loss",
+    help="Creates tensorboard logger to see graph of model, view model weights and biases, and monitor test agent reward progress",
 )
 parser.add_argument(
     "-evc", "--env-config",
